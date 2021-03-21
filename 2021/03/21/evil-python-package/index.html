@@ -186,7 +186,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      219 字
+      220 字
     </span>
   
 
@@ -243,15 +243,18 @@
 <p>测试是否运行正常</p>
 <figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ ncat -lvnp 8888<br><br><span class="hljs-comment">####</span><br><br>$ python3 setup.py<br></code></pre></div></td></tr></table></figure>
 <br/>
-## 创建 .pypirc
-创建 `.pypirc` 用以将包分发到远程服务器(目标)
+
+<h2 id="创建-pypirc"><a href="#创建-pypirc" class="headerlink" title="创建 .pypirc"></a>创建 .pypirc</h2><p>创建 <code>.pypirc</code> 用以将包分发到远程服务器(目标)</p>
 <figure class="highlight ini"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs ini"><span class="hljs-section">[distutils]</span><br><span class="hljs-attr">index-servers</span> = remote<br><br><span class="hljs-section">[remote]</span><br><span class="hljs-attr">repository</span> = &lt;second-repository URL&gt;<br><span class="hljs-attr">username</span> = &lt;second-repository username&gt;<br><span class="hljs-attr">password</span> = &lt;second-repository password&gt;<br></code></pre></div></td></tr></table></figure>
 <br/>
-## 分发到远程服务器
-<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ python3 setup.py sdist upload -r remote <br></code></pre></div></td></tr></table></figure>
+
+<h2 id="分发到远程服务器"><a href="#分发到远程服务器" class="headerlink" title="分发到远程服务器"></a>分发到远程服务器</h2><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">$ python3 setup.py sdist upload -r remote <br></code></pre></div></td></tr></table></figure>
 <br/>
-## Links & Resources
-- YoutuBe - Ippsec - HackTheBox - SneakyMailer
+
+<h2 id="Links-amp-Resources"><a href="#Links-amp-Resources" class="headerlink" title="Links &amp; Resources"></a>Links &amp; Resources</h2><ul>
+<li>YoutuBe - Ippsec - HackTheBox - SneakyMailer</li>
+</ul>
+
             </div>
             <hr>
             <div>
